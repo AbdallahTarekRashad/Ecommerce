@@ -1,0 +1,24 @@
+{% extends 'AdminLte/base.html' %}
+{% load static i18n %}
+{% block body %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="callout callout-info">
+                    <h5>{% trans 'Category' %}</h5>
+                    <p>{% trans 'Name' %} : {{ category.name }}</p>
+                    <p>{% trans 'Name Ar' %} : {{ category.name_ar }}</p>
+                    <p>{% trans 'Description' %} : {{ category.description }}</p>
+                    <p>{% trans 'Description Ar' %} : {{ category.description_ar }}</p>
+                    <p>{% trans 'Image' %} : <img style="max-height: 100px" src="{{ category.image.url }}"></p>
+                    <div style="text-align: right">
+                        <a style="color: white;text-decoration: unset;" class="btn btn-danger"
+                           href="{% url 'products:category_delete' category.pk %}">{% trans 'Delete' %}</a>
+                        <a style="color: white;text-decoration: unset;" class="btn btn-success"
+                           href="{% url 'products:category_update'  category.pk %}">{% trans 'Update' %}</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

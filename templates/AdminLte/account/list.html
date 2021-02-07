@@ -1,0 +1,130 @@
+{% extends 'AdminLte/base.html' %}
+{% load static i18n extra_tags %}
+{% block extra_head %}
+    {% include 'AdminLte/datatable_head.html' %}
+{% endblock %}
+{% block body %}
+    {% define perms.accounts.delete_user as delete %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>{% trans "Accounts" %}</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">{% trans 'Home' %}</a></li>
+                            <li class="breadcrumb-item active">{% trans 'Accounts' %}</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <table id="example1" class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th>{% trans 'No' %}</th>
+                                    {% if delete %}
+                                        <th>#</th>
+                                    {% endif %}
+                                    <th>{% trans 'Username' %}</th>
+                                    <th>{% trans 'Email' %}</th>
+                                    <th>{% trans 'Name' %}</th>
+                                    <th>{% trans 'Birth Date' %}</th>
+                                    <th>{% trans 'Profile Image' %}</th>
+                                </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                <tr>
+                                    <th>{% trans 'No' %}</th>
+                                    {% if delete %}
+                                        <th>#</th>
+                                    {% endif %}
+                                    <th>{% trans 'Username' %}</th>
+                                    <th>{% trans 'Email' %}</th>
+                                    <th>{% trans 'Name' %}</th>
+                                    <th>{% trans 'Birth Date' %}</th>
+                                    <th>{% trans 'Profile Image' %}</th>
+                                </tr>
+                                </tfoot>
+                            </table>
+
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+{% block extra_script %}
+    {% define perms.accounts.add_user as add %}
+    {% define perms.accounts.delete_user as delete %}
+    {% define perms.accounts.change_user as update %}
+    {% include 'AdminLte/datatable_scripts.html' with add_perm=add del_perm=delete up_perm=update %}
+    <script>
+        {% if update %}
+            const link = '/seller/account/update/'; {# for num_render function in AdminLte/datatable_scripts.html #}
+        {% endif %}
+        {% if add %}
+            const addLink = '{% url 'accounts:account_add' %}';
+            {# for addBtn function in AdminLte/datatable_scripts.html #}
+        {% endif %}
+        $(document).ready(function () {
+            $('#example1').dataTable({
+                responsive: true,
+                autoWidth: true,
+                lengthMenu: lengthMenu,
+                order: [],
+                dom: 'Bfrtip',
+                buttons: buttons, {# global variable define in AdminLte/datatable_scripts.html #}
+                language: dt_language, {# global variable defined in AdminLte/datatable_scripts.html #}
+                columns: [
+                    {data: 0, render: num_render}, {# global function define in AdminLte/datatable_scripts.html #}
+                    {% if delete %}
+                        {
+                            data: 0,
+                            render: checkbox_render
+                        }, {# global function define in AdminLte/datatable_scripts.html #}
+                    {% endif %}
+                    {data: 1},
+                    {data: 2},
+                    {data: 3},
+                    {data: 4},
+                    {data: 5, render: img_render}, {# global function define in AdminLte/datatable_scripts.html #}
+                ],
+                {% if delete %}
+                    columnDefs: [
+                        {targets: [2, 3, 4, 5], className: 'text-center', orderable: true, searchable: true},
+                        {targets: [0, 1, 6], className: 'text-center', orderable: false, searchable: false}
+                    ],
+                {% else %}
+                    columnDefs: [
+                        {targets: [1, 2, 3, 4], orderable: true, searchable: true},
+                        {targets: [0, 5], orderable: false, searchable: false}
+                    ],
+                {% endif %}
+                searching: true,
+                processing: true,
+                serverSide: true,
+                stateSave: false,
+                ajax: {
+                    'url': '{% url "accounts:account_list_data" %}',
+                    'data': function (data) {
+                    }
+                }
+            })
+        });
+    </script>
+{% endblock %}
