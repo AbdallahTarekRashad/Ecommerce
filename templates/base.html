@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zxx">
+<head>
+    {% include 'head.html' %}
+    {% block extra_head %}
+    {% endblock %}
+</head>
+<body>
+<!-- Page Preloder -->
+<div id="preloder">
+    <div class="loader"></div>
+</div>
+
+{% include 'header.html' %}
+{% block body %}
+{% endblock %}
+{% include 'footer.html' %}
+{% include 'scripts.html' %}
+{% block extra_scripts %}
+{% endblock %}
+</body>
+</html>

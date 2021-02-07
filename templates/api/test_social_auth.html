@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<h1>Django-rest-framework and OAuth example</h1>
+<ul>
+    {#    <li><a href="{% url 'home_token' %}">Token auth</a></li>#}
+</ul>
+
+{% block content %}
+    {% load static %}
+    <div ng-app="TokenApp">
+        <div ng-controller="LoginTokenCtrl as ctrl">
+            <div>
+                <h4>{{ rest_framework.authentication.TokenAuthentication }}</h4>
+                <div>
+                    <button ng-click="authenticate('facebook')">Login facebook (OAuth 2.0)</button>
+                </div>
+                <div>
+                    <button ng-click="authenticate('google')">Login google (OAuth 2.0)</button>
+                </div>
+                <div>
+                    <button ng-click="authenticate('twitter')">Login twitter (OAuth 1.0)</button>
+                </div>
+                <div>
+                    <button ng-click="logout()">Logout token</button>
+                </div>
+            </div>
+            <div>
+                <h2>Token user data</h2>
+                <div>
+                    {% verbatim %}
+                    <img ng-src='{{ctrl.user.thumb}}'/>
+                    {% endverbatim %}
+                </div>
+                <div>
+                    <span>First name:</span>
+                    <span ng-bind="ctrl.user.first_name"></span>
+                </div>
+                <div>
+                    <span>Last name:</span>
+                    <span ng-bind="ctrl.user.last_name"></span>
+                </div>
+                <div>
+                    <span>Email:</span>
+                    <span ng-bind="ctrl.user.email"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block scripts %}
+    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.js"></script>
+    <script src="https://cdn.jsdelivr.net/satellizer/0.15.5/satellizer.min.js"></script>
+    <script type="text/javascript">
+
+        function set_user(response) {
+            var source;
+            if (response) {
+                source = response.data;
+            } else {
+                source = {
+                    'username': null,
+                    'first_name': null,
+                    'last_name': null,
+                    'email': null,
+                    'social_thumb': null
+                };
+            }
+            self.user.username = source.username;
+            self.user.first_name = source.first_name;
+            self.user.last_name = source.last_name;
+            self.user.email = source.email;
+            self.user.thumb = source.social_thumb;
+        };
+
+        angular.module('TokenApp', ['satellizer'])
+            .config(function ($authProvider) {
+                $authProvider.facebook({
+                    url: "{% url 'accounts:accounts_api:login_social_token_user' provider='facebook' %}",
+                    clientId: '{{ facebook_key }}'
+                });
+                $authProvider.google({
+                    url: "{% url 'accounts:accounts_api:login_social_token_user' provider='google-oauth2' %}",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    clientId: '{{ googleoauth2_key }}',
+                    redirectUri: window.location.origin + '/'
+                });
+
+                $authProvider.authToken = 'Token';
+            }).controller('LoginTokenCtrl', function ($scope, $auth, $http) {
+            $http.defaults.headers.get = {'Content-Type': 'application/json'};
+            self = this;
+            self.user = {};
+            set_user();
+            if ($auth.getToken()) {
+                $http.get('{% url "accounts:accounts_api:current_user_token" %}').then(function (response) {
+                    set_user(response);
+                });
+            }
+
+            $scope.authenticate = function (provider) {
+                $auth.authenticate(provider).then(function (response) {
+                    $auth.setToken(response.data.token);
+                    set_user(response);
+                });
+            };
+
+            $scope.logout = function () {
+                $auth.removeToken();
+                set_user();
+            };
+        });
+
+    </script>
+{% endblock scripts %}
+</body>
+</html>

@@ -1,0 +1,97 @@
+{% load static extra_tags i18n %}
+{% if site_info.facebook %}
+    {% define '<a href="'|add:site_info.facebook|add:'"><i class="fa fa-facebook"></i></a>' as facebook %}
+{% endif %}
+{% if site_info.twitter %}
+    {% define '<a href="'|add:site_info.twitter|add:'"><i class="fa fa-twitter"></i></a>' as twitter %}
+{% endif %}
+{% if site_info.instagram %}
+    {% define '<a href="'|add:site_info.instagram|add:'"><i class="fa fa-instagram"></i></a>' as instagram %}
+{% endif %}
+{% if site_info.linkedin %}
+    {% define '<a href="'|add:site_info.linkedin|add:'"><i class="fa fa-linkedin"></i></a>' as linkedin %}
+{% endif %}
+<footer class="footer spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="footer__about">
+                    <div class="footer__about__logo">
+                        <a href="{% url 'accounts:home' %}"><img src="{{ site_info.logo.url }}" alt=""></a>
+                    </div>
+                    <ul>
+                        <li>{% trans 'Address' %}: {{ site_info.address }}</li>
+                        <li>{% trans 'Phone' %}: {{ site_info.phone }}</li>
+                        <li>{% trans 'Email' %}: {{ site_info.email }}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-6 offset-lg-1">
+                <div class="footer__widget">
+                    <h6>Useful Links</h6>
+                    <ul>
+                        <li><a href="{% url 'accounts:home' %}">{% trans 'Home' %}</a></li>
+                        <li><a href="#">Shop</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <div class="footer__widget">
+                    <h6>{% trans 'Account' %}</h6>
+
+                    <ul>
+
+                        <li><a href="#">Profile</a></li>
+                        <li><a href="#">Track Your Order</a></li>
+                    </ul>
+                    <div class="footer__widget__social">
+                        {{ facebook|safe }}
+                        {{ twitter|safe }}
+                        {{ instagram|safe }}
+                        {{ linkedin|safe }}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="footer__copyright">
+                    <div class="footer__copyright__text">
+                        <p>
+                            Copyright &copy;<script>document.write(new Date().getFullYear());</script>
+                            All rights reserved | This template is made by
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if site_info.whatsapp_btn %}
+        <style>
+            .float {
+                position: fixed;
+                width: 60px;
+                height: 60px;
+                bottom: 40px;
+                right: 40px;
+                background-color: #25d366;
+                color: #FFF;
+                border-radius: 50px;
+                text-align: center;
+                font-size: 30px;
+                box-shadow: 2px 2px 3px #999;
+                z-index: 100;
+            }
+
+            .my-float {
+                margin-top: 16px;
+            }
+        </style>
+        <a href="https://api.whatsapp.com/send?phone=+2{{ site_info.phone }}"
+           class="float" target="_blank">
+            <i class="fa fa-whatsapp my-float"></i>
+        </a>
+    {% endif %}
+</footer>
