@@ -1,0 +1,121 @@
+{% extends 'AdminLte/base.html' %}
+{% load static i18n widget_tweaks extra_tags %}
+{% block body %}
+
+    <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>{% trans 'Option' %}</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">{% trans 'Home' %}</a></li>
+                            <li class="breadcrumb-item active">{% trans 'Option Form' %}</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">{% trans 'Option' %}</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <!-- form start -->
+                            <form method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.name.errors %}
+                                                    {% define 'form-control is-invalid' as name_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as name_class %}
+                                                {% endif %}
+                                                <label for="name">{% trans 'Name' %}</label>
+                                                {% render_field form.name class=name_class id="name" %}
+                                                <div style="color: red">
+                                                    {{ form.name.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.name_ar.errors %}
+                                                    {% define 'form-control is-invalid' as name_ar_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as name_ar_class %}
+                                                {% endif %}
+                                                <label for="name_ar">{% trans 'Name Ar' %}</label>
+                                                {% render_field form.name_ar class=name_ar_class id="name_ar" %}
+                                                <div style="color: red">
+                                                    {{ form.name_ar.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.description.errors %}
+                                                    {% define 'form-control is-invalid' as description_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as description_class %}
+                                                {% endif %}
+                                                <label for="description">{% trans 'Description' %}</label>
+                                                {% render_field form.description rows='5' class=description_class id="description" %}
+                                                <div style="color: red">
+                                                    {{ form.description.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.description_ar.errors %}
+                                                    {% define 'form-control is-invalid' as description_ar_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as description_ar_class %}
+                                                {% endif %}
+                                                <label for="description_ar">{% trans 'Description Ar' %}</label>
+                                                {% render_field form.description_ar rows='5' class=description_ar_class id="description_ar" %}
+                                                <div style="color: red">
+                                                    {{ form.description_ar.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!-- /.card-body -->
+
+                                <div class="card-footer">
+                                    <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+                                    {% if form.instance.pk %}
+                                        {% if perms.products.delete_option %}
+                                            <a href="{% url 'products:option_delete' form.instance.pk %}"
+                                               style="float: right" type="submit" class="btn btn-danger">Delete
+                                            </a>
+                                        {% endif %}
+                                    {% else %}
+                                        <input type="submit"
+                                               class="btn btn-success"
+                                               name="another"
+                                               value="{% trans 'Save And Add Another' %}">
+                                    {% endif %}
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

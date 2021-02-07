@@ -1,0 +1,127 @@
+{% extends 'AdminLte/base.html' %}
+{% load static i18n extra_tags %}
+{% block extra_head %}
+    {% include 'AdminLte/datatable_head.html' %}
+{% endblock %}
+{% block body %}
+    {% define perms.products.delete_option as delete %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>{% trans "Option" %}</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">{% trans 'Home' %}</a></li>
+                            <li class="breadcrumb-item active">{% trans 'Option' %}</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <table id="example1" class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th>{% trans 'No' %}</th>
+                                    {% if delete %}
+                                        <th>#</th>
+                                    {% endif %}
+                                    <th>{% trans 'name' %}</th>
+                                    <th>{% trans 'name_ar' %}</th>
+                                    <th>{% trans 'description' %}</th>
+                                    <th>{% trans 'description' %}</th>
+                                </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                <tr>
+                                    <th>{% trans 'No' %}</th>
+                                    {% if delete %}
+                                        <th>#</th>
+                                    {% endif %}
+                                    <th>{% trans 'name' %}</th>
+                                    <th>{% trans 'name_ar' %}</th>
+                                    <th>{% trans 'description' %}</th>
+                                    <th>{% trans 'description' %}</th>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+{% block extra_script %}
+    {% define perms.products.add_option as add %}
+    {% define perms.products.delete_option as delete %}
+    {% define perms.products.change_option as update %}
+    {% include 'AdminLte/datatable_scripts.html' with add_perm=add del_perm=delete up_perm=update %}
+    <script>
+        {% if update %}
+            const link = '/seller/option/update/';
+            {# for num_render function in AdminLte/datatable_scripts.html #}
+        {% endif %}
+        {% if add %}
+            const addLink = '{% url 'products:option_add' %}';
+            {# for addBtn function in AdminLte/datatable_scripts.html #}
+        {% endif %}
+        $(document).ready(function () {
+            $('#example1').dataTable({
+                responsive: true,
+                autoWidth: false,
+                lengthMenu: lengthMenu,
+                order: [],
+                dom: 'Bfrtip',
+                buttons: buttons, {# global variable define in AdminLte/datatable_scripts.html #}
+                language: dt_language, {# global variable defined in AdminLte/datatable_scripts.html #}
+                columns: [
+                    {data: 0, render: num_render}, {# global function define in AdminLte/datatable_scripts.html #}
+                    {% if delete %}
+                        {
+                            data: 0,
+                            render: checkbox_render
+                        }, {# global function define in AdminLte/datatable_scripts.html #}
+                    {% endif %}
+                    {data: 1},
+                    {data: 2},
+                    {render: long_render}, {# global function define in AdminLte/datatable_scripts.html #}
+                    {data: 4, render: long_render}, {# global function define in AdminLte/datatable_scripts.html #}
+                ],
+                {% if delete %}
+                    columnDefs: [
+                        {targets: [2, 3, 4, 5], orderable: true, searchable: true},
+                        {targets: [0, 1], orderable: false, searchable: false}
+                    ],
+                {% else %}
+                    columnDefs: [
+                        {targets: [1, 2, 3, 4], orderable: true, searchable: true},
+                        {targets: [0], orderable: false, searchable: false}
+                    ],
+                {% endif %}
+
+                searching: true,
+                processing: true,
+                serverSide: true,
+                stateSave: false,
+                ajax: {
+                    'url': '{% url "products:option_list_data" %}',
+                    'data': function (data) {
+                    }
+                }
+            })
+        });
+    </script>
+{% endblock %}

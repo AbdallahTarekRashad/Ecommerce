@@ -1,0 +1,20 @@
+{% extends 'AdminLte/base.html' %}
+{% load static i18n %}
+{% block body %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="callout callout-danger">
+                    <h5>{{ country.name_en }}</h5>
+
+                    <p>{% trans 'Are you sure you want to delete it?' %}</p>
+                    <form style="text-align: right;" method="post">
+                        {% csrf_token %}
+                        <input class="btn btn-danger" type="submit" value="{% trans 'Delete' %}">
+                        <a style="color: white;text-decoration: unset;" class="btn btn-success" href="{% url 'accounts:country_list' %}">{% trans 'Exit' %}</a>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

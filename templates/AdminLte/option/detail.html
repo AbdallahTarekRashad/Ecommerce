@@ -1,0 +1,24 @@
+{% extends 'AdminLte/base.html' %}
+{% load static i18n %}
+{% block body %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="callout callout-info">
+                    <h5>{% trans 'Option' %}</h5>
+                    <p>{% trans 'Name' %} : {{ option.name }}</p>
+                    <p>{% trans 'Name Ar' %} : {{ option.name_ar }}</p>
+                    <p>{% trans 'Description' %} : {{ option.description }}</p>
+                    <p>{% trans 'Description Ar' %} : {{ option.description_ar }}</p>
+
+                    <div style="text-align: right">
+                        <a style="color: white;text-decoration: unset;" class="btn btn-danger"
+                           href="{% url 'products:option_delete' option.pk %}">{% trans 'Delete' %}</a>
+                        <a style="color: white;text-decoration: unset;" class="btn btn-success"
+                           href="{% url 'products:option_update'  option.pk %}">{% trans 'Update' %}</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

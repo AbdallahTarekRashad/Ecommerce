@@ -1,0 +1,22 @@
+{% extends 'AdminLte/base.html' %}
+{% load static i18n %}
+{% block body %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="callout callout-info">
+                    <h5>{% trans 'Category' %}</h5>
+                    <p>{% trans 'Name' %} : {{ country.name_en }}</p>
+                    <p>{% trans 'Name Ar' %} : {{ country.name_ar }}</p>
+                    <p>{% trans 'Logo' %} : <p role="img" style="max-height: 100px" src="{{ country.logo }}"></p>
+                    <div style="text-align: right">
+                        <a style="color: white;text-decoration: unset;" class="btn btn-danger"
+                           href="{% url 'accounts:country_delete' country.pk %}">{% trans 'Delete' %}</a>
+                        <a style="color: white;text-decoration: unset;" class="btn btn-success"
+                           href="{% url 'accounts:country_update'  country.pk %}">{% trans 'Update' %}</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}
