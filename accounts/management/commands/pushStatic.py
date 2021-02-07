@@ -2,6 +2,7 @@ import glob
 from os.path import isfile
 
 from django.core.management.base import BaseCommand
+from django.core.management import call_command
 
 from git import Repo
 
@@ -29,3 +30,4 @@ class Command(BaseCommand):
                     print('Push')
         except:
             print('Some error occured while pushing the code')
+            call_command('pushStatic')
