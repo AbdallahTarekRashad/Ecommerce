@@ -1,0 +1,44 @@
+{#{% if widget.is_initial %}#}
+{#    <div class="row">#}
+{#        <a href="{{ widget.value.url }}">{{ widget.value }}</a>#}
+{#    </div>#}
+{#    {% if not widget.required %}#}
+{#        <input type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}"#}
+{#                {% if widget.attrs.disabled %} disabled{% endif %}>#}
+{#        <label for="{{ widget.checkbox_id }}">{{ widget.clear_checkbox_label }}</label>{% endif %}#}
+{##}
+{#{% endif %}#}
+{##}
+{% load i18n %}
+
+
+<div class="form-group">
+    <label for="image">{{ widget.name }}</label>
+    <div class="row">
+        {% if widget.is_initial %}
+            <div class="col-6">
+                <img id="img" style="max-height: 50px" src="{{ widget.value.url }}">
+{#                {% if not widget.required %}#}
+{#                    <input type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}"#}
+{#                            {% if widget.attrs.disabled %} disabled{% endif %}>#}
+{#                    <label for="{{ widget.checkbox_id }}">{{ widget.clear_checkbox_label }}</label>#}
+{#                {% endif %}#}
+            </div>
+        {% else %}
+            <div class="col-6">
+                <img id="img" style="max-height: 50px" src="">
+            </div>
+        {% endif %}
+        <div class="col-6 input-group custom-file">
+
+            <input class="row custom-file-input" id="image" accept="image/*" type="{{ widget.type }}"
+                   name="{{ widget.name }}">
+
+
+            <div class="input-group-append">
+                <label style="margin-right: 10px" class="custom-file-label"
+                       for="exampleInputFile">{% trans 'Choose file' %}</label>
+            </div>
+        </div>
+    </div>
+</div>

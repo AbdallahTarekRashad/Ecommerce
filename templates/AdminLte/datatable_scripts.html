@@ -1,0 +1,194 @@
+{% load static i18n %}
+<!-- /.modal -->
+{# delete modal and form added for any data table with his scripts and it run for all #}
+{% if del_perm %}
+    <form id="DelForm" method="post">
+        {% csrf_token %}
+    </form>
+    <div class="modal fade" id="modal-danger">
+        <div class="modal-dialog">
+            <div class="modal-content bg-danger">
+                <div class="modal-header">
+                    <h4 class="modal-title">{% trans 'Delete' %}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalBody"></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-light"
+                            data-dismiss="modal">{% trans 'Close' %}</button>
+                    <button type="button" class="btn btn-outline-light" onclick="delBtn()">{% trans 'Delete' %}</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+{% endif %}
+<!-- /.modal -->
+{#<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>#}
+<script src="{% static 'AdminLte/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'AdminLte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'AdminLte/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'AdminLte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'AdminLte/plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'AdminLte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'AdminLte/plugins/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'AdminLte/plugins/pdfmake/pdfmake.min.js' %}"></script>
+<script src="{% static 'AdminLte/plugins/pdfmake/vfs_fonts.js' %}"></script>
+<script src="{% static 'AdminLte/plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'AdminLte/plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'AdminLte/plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+<script src="{% static 'AdminLte/plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+
+<script>
+    {% if del_perm %}
+        var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 5000
+        });
+    {% endif %}
+    const dt_language = {
+        "emptyTable": "{% trans "No data available in table" %}",
+        "info": "{% trans "Showing _START_ to _END_ of _TOTAL_ entries" %}",
+        "infoEmpty": "{% trans "Showing 0 to 0 of 0 entries" %}",
+        "infoFiltered": "{% trans "(filtered from _MAX_ total entries)" %}",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "{% trans "Show _MENU_ entries" %}",
+        "loadingRecords": "{% trans "Loading..." %}",
+        "processing": "{% trans "Processing..." %}",
+        "search": "{% trans "Search:" %}",
+        "zeroRecords": "{% trans "No matching records found" %}",
+        "paginate": {
+            "first": "{% trans "First" %}",
+            "last": "{% trans "Last" %}",
+            "next": "{% trans "Next" %}",
+            "previous": "{% trans "Previous" %}"
+        },
+        "aria": {
+            "sortAscending": "{% trans ": activate to sort column ascending" %}",
+            "sortDescending": "{% trans ": activate to sort column descending" %}"
+        },
+    };
+    const lengthMenu = [
+        [10, 25, 50, 100, -1],
+        ['10', '25', '50', '100', 'Show all']
+    ];
+    const buttons = [
+        'pageLength',
+        {% if add_perm %}
+            {
+                text: '{% trans 'Add' %}',
+                className: 'btn btn-success',
+                action: addBtn
+            },
+        {% endif %}
+        {% if del_perm %}
+            {
+                text: '{% trans 'Select All' %}',
+                className: 'btn btn-warning',
+                action: selectAll
+            },
+            {
+                text: '{% trans 'Delete' %}',
+                className: 'btn btn-danger',
+                action: function (e, dt, node, config) {
+                    const selected = new Array();
+                    $("#example1 input[type=checkbox]:checked").each(function () {
+                        selected.push(this.value);
+                    });
+                    if (selected.length > 0) {
+                        document.getElementById('modalBody').innerText = '{% trans 'you will delete ' %}' + selected.length
+                        $('#modal-danger').modal('show');
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: '   {% trans 'You Must Check Rows' %}'
+                        })
+                    }
+                }
+            },
+        {% endif %}
+        {
+            extend: 'copy',
+            text: '{% trans 'Copy' %}'
+        },
+        {
+            extend: 'csv',
+            text: '{% trans 'CSV' %}'
+        },
+        {
+            extend: 'excel',
+            text: '{% trans 'Excel' %}'
+        },
+        {
+            extend: 'print',
+            text: '{% trans 'Print' %}',
+            exportOptions: {
+                columns: ':visible'
+            }
+        },
+        {
+            extend: 'colvis',
+            text: '{% trans 'Column Visibility' %}'
+        }
+    ]
+
+
+
+    {% if del_perm %}
+        let flag = true
+        function selectAll(e, dt, node, config) {
+            $("#example1 input[type=checkbox]").each(function () {
+                if (flag) {$(this).prop('checked', true);}
+                else {$(this).prop('checked', false);}
+            });
+            if (flag) {flag =false} else {flag =true}
+        }
+        function delBtn() {
+            const selected = new Array();
+            $("#example1 input[type=checkbox]:checked").each(function () {
+                selected.push(this.value);
+            });
+            document.getElementById('DelForm').innerHTML += '<input type="hidden" name="deleteIds" value="' + selected + '">';
+            document.getElementById('DelForm').submit();
+        }
+    {% endif %}
+    {% if add_perm %}
+        function addBtn(e, dt, node, config) {
+            document.location.href = addLink;
+        }
+    {% endif %}
+
+    function long_render(data, type, row, meta) {
+        if (data.length > 40)
+            return data.substring(0, 40) + ' ... ';
+        return data;
+    }
+
+    function img_render(data, type, row, meta) {
+        return '<img style="max-height: 50px" src="' + data + '" >'
+    }
+    {% if del_perm %}
+        function checkbox_render(data, type, row, meta) {
+            return '<input type="checkbox" value="' + data + '" >'
+        }
+    {% endif %}
+    {% if up_perm %}
+        function num_render(data, type, row, meta) {
+            var num = meta.row + meta.settings._iDisplayStart + 1;
+            return '<a href="' + link + data + '">' + num + '</a>'
+        }
+    {% else %}
+        function num_render(data, type, row, meta) {
+            let num = meta.row + meta.settings._iDisplayStart + 1;
+            return num;
+        }
+    {% endif %}
+</script>

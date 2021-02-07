@@ -1,0 +1,40 @@
+{% load i18n static %}
+<!-- SweetAlert2 -->
+<script src="{% static 'AdminLte/plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+<script src="{% static 'AdminLte/plugins/bs-custom-file-input/bs-custom-file-input.min.js' %}"></script>
+<script>
+    var fileTypes = ['jpg', 'jpeg', 'png']
+    var Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 5000
+    });
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var extension = input.files[0].name.split('.').pop().toLowerCase()  //file extension from input file
+            var isSuccess = fileTypes.indexOf(extension) > -1;
+            if (isSuccess) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#img').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                input.files[0] = null;
+                Toast.fire({
+                    icon: 'error',
+                    title: '{% trans 'File must be image type like this jpg, jpeg, png ' %}'
+                })
+            }
+        }
+    }
+
+    $("#image").change(function () {
+        readURL(this);
+    });
+    $(function () {
+        bsCustomFileInput.init();
+    });
+</script>
