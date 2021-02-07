@@ -1,0 +1,290 @@
+{% extends 'AdminLte/base.html' %}
+{% load static i18n widget_tweaks extra_tags %}
+{% block extra_head %}
+    <!-- Select2 -->
+    <link rel="stylesheet" href="{% static 'AdminLte/plugins/select2/css/select2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css' %}">
+{% endblock %}
+{% block body %}
+
+    <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>{% trans 'Product' %}</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">{% trans 'Home' %}</a></li>
+                            <li class="breadcrumb-item active">{% trans 'Product Form' %}</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">{% trans 'Product' %}</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <!-- form start -->
+                            <form method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.name.errors %}
+                                                    {% define 'form-control is-invalid' as name_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as name_class %}
+                                                {% endif %}
+                                                <label for="name">{% trans 'Name' %}</label>
+                                                {% render_field form.name class=name_class id="name" %}
+                                                <div style="color: red">
+                                                    {{ form.name.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.name_ar.errors %}
+                                                    {% define 'form-control is-invalid' as name_ar_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as name_ar_class %}
+                                                {% endif %}
+                                                <label for="name_ar">{% trans 'Name Ar' %}</label>
+                                                {% render_field form.name_ar class=name_ar_class id="name_ar" %}
+                                                <div style="color: red">
+                                                    {{ form.name_ar.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.description.errors %}
+                                                    {% define 'form-control is-invalid' as description_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as description_class %}
+                                                {% endif %}
+                                                <label for="description">{% trans 'Description' %}</label>
+                                                {% render_field form.description rows='5' class=description_class id="description" %}
+                                                <div style="color: red">
+                                                    {{ form.description.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.description_ar.errors %}
+                                                    {% define 'form-control is-invalid' as description_ar_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as description_ar_class %}
+                                                {% endif %}
+                                                <label for="description_ar">{% trans 'Description Ar' %}</label>
+                                                {% render_field form.description_ar rows='5' class=description_ar_class id="description_ar" %}
+                                                <div style="color: red">
+                                                    {{ form.description_ar.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.sku.errors %}
+                                                    {% define 'form-control is-invalid' as sku_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as sku_class %}
+                                                {% endif %}
+                                                <label for="sku">{% trans 'SKU' %}</label>
+                                                {% render_field form.sku class=sku_class id="sku" %}
+                                                <div style="color: red">
+                                                    {{ form.sku.errors }}
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.price.errors %}
+                                                    {% define 'form-control is-invalid' as price_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as price_class %}
+                                                {% endif %}
+                                                <label for="price">{% trans 'Price' %}</label>
+                                                {% render_field form.price min=0 class=price_class id="price" %}
+                                                <div style="color: red">
+                                                    {{ form.price.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.weight.errors %}
+                                                    {% define 'form-control is-invalid' as weight_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as weight_class %}
+                                                {% endif %}
+                                                <label for="weight">{% trans 'Weight in Kg' %}</label>
+                                                {% render_field form.weight min=0 class=weight_class id="weight" %}
+                                                <div style="color: red">
+                                                    {{ form.weight.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.stock.errors %}
+                                                    {% define 'form-control is-invalid' as stock_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as stock_class %}
+                                                {% endif %}
+                                                <label for="stock">{% trans 'Stock' %}</label>
+                                                {% render_field form.stock min=0 class=stock_class id="stock" %}
+                                                <div style="color: red">
+                                                    {{ form.stock.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label for="options">{% trans 'Options' %}</label>
+                                                {% trans 'Select Options' as option %}
+                                                {% render_field form.options class="select2" multiple="multiple" data-placeholder=option style="width: 100%;" %}
+                                                <div style="color: red">
+                                                    {{ form.options.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label for="categories">{% trans 'Categories' %}</label>
+                                                {% trans 'Select Categories' as category %}
+                                                {% render_field form.categories class="select2" multiple="" data-placeholder=category style="width: 100%;" %}
+                                                <div style="color: red">
+                                                    {{ form.categories.errors }}
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            {{ form.main_image }}
+                                            <div style="color: red">
+                                                {{ form.main_image.errors }}
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label for="image">{% trans 'Product Images' %}</label>
+                                                <div class="row">
+                                                    <div class="col-6" id="imagesDiv">
+                                                        {% if form.instance.pk %}
+                                                            <div style="text-align: center" class="row">
+                                                                {% for img in product.images.all %}
+                                                                    <div id="img{{ img.id }}" class="col-6">
+                                                                        <img style="max-height: 50px"
+                                                                             src="{{ img.image.url }}">
+                                                                        <button id="{{ img.id }}" type="button"
+                                                                                class="close" aria-label="Close"
+                                                                                onclick="DelImg(this)">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+                                                                {% endfor %}
+                                                            </div>
+                                                            <input type="hidden" name="delImg" id="delImg">
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="col-6 custom-file">
+                                                        <input class="custom-file-input" type="file" name="images"
+                                                               id="images"
+                                                               multiple name="images">
+                                                        <div class="input-group-append ">
+                                                            <label style="margin-right: 10px" class="custom-file-label"
+                                                                   for="exampleInputFile">{% trans 'Choose file' %}</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.card-body -->
+
+                                <div class="card-footer">
+                                    <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+                                    {% if form.instance.pk %}
+                                        {% if perms.products.delete_product %}
+                                            <a href="{% url 'products:product_delete' form.instance.pk %}"
+                                               style="float: right" type="submit" class="btn btn-danger">Delete
+                                            </a>
+                                        {% endif %}
+                                    {% else %}
+                                        <input type="submit"
+                                               class="btn btn-success"
+                                               name="another"
+                                               value="{% trans 'Save And Add Another' %}">
+                                    {% endif %}
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block extra_script %}
+    <!-- Select2 -->
+    <script src="{% static 'AdminLte/plugins/select2/js/select2.full.min.js' %}"></script>
+    <script src="{% static 'AdminLte/plugins/jquery.MultiFile.min.js' %}"></script>
+    <script>
+        function DelImg(btn) {
+            $('#img' + btn.id).remove();
+            $('#delImg').val($('#delImg').val() + btn.id + ',')
+        }
+
+        $(function () {
+            $('.select2').select2({theme: 'bootstrap4'});
+            $('#images').MultiFile({
+                max_size: 10240,
+                accept: 'jpg|jpeg|png',
+                onFileAppend: function (element, value, master_element) {
+                    console.log(element.files[0].name.split('.')[0])
+                    var reader = new FileReader();
+                    var img = new Image();
+                    reader.onload = function (e) {
+                        img.style.maxHeight = '50px';
+                        img.src = e.target.result;
+                        img.id = element.files[0].name.split('.')[0];
+                    }
+                    reader.readAsDataURL(element.files[0]);
+                    $('#imagesDiv').append(img)
+                },
+                onFileRemove: function (element, value, master_element) {
+                    console.log(element.files[0].name)
+                    var id = '#' + element.files[0].name
+                    console.log(id)
+                    $('#' + element.files[0].name.split('.')[0]).remove()
+                },
+            })
+        });
+
+    </script>
+    {% include 'AdminLte/image_script.html' %}
+{% endblock %}

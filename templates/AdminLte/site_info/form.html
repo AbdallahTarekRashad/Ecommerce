@@ -1,0 +1,225 @@
+{% extends 'AdminLte/base.html' %}
+{% load static i18n widget_tweaks extra_tags %}
+{% block body %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>{% trans 'Site Info' %}</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">{% trans 'Home' %}</a></li>
+                            <li class="breadcrumb-item active">{% trans 'Site Info Form' %}</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">{% trans 'Site Info' %}</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <!-- form start -->
+                            <form method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.name.errors %}
+                                                    {% define 'form-control is-invalid' as name_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as name_class %}
+                                                {% endif %}
+                                                <label for="name">{% trans 'Name' %}</label>
+                                                {% render_field form.name class=name_class id="name" %}
+                                                <div style="color: red">
+                                                    {{ form.name.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.name_ar.errors %}
+                                                    {% define 'form-control is-invalid' as name_ar_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as name_ar_class %}
+                                                {% endif %}
+                                                <label for="name_ar">{% trans 'Name Ar' %}</label>
+                                                {% render_field form.name_ar class=name_ar_class id="name_ar" %}
+                                                <div style="color: red">
+                                                    {{ form.name_ar.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.description.errors %}
+                                                    {% define 'form-control is-invalid' as address_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as address_class %}
+                                                {% endif %}
+                                                <label for="address">{% trans 'Address' %}</label>
+                                                {% render_field form.address class=address_class id="address" %}
+                                                <div style="color: red">
+                                                    {{ form.address.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.address_ar.errors %}
+                                                    {% define 'form-control is-invalid' as address_ar_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as address_ar_class %}
+                                                {% endif %}
+                                                <label for="address_ar">{% trans 'Address Ar' %}</label>
+                                                {% render_field form.address_ar class=address_ar_class id="address_ar" %}
+                                                <div style="color: red">
+                                                    {{ form.address_ar.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.phone2.errors %}
+                                                    {% define 'form-control is-invalid' as phone2_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as phone2_class %}
+                                                {% endif %}
+                                                <label for="phone2">{% trans 'Another Phone' %}</label>
+                                                {% render_field form.phone2 class=phone2_class id="phone2" %}
+                                                <div style="color: red">
+                                                    {{ form.phone2.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.phone.errors %}
+                                                    {% define 'form-control is-invalid' as phone_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as phone_class %}
+                                                {% endif %}
+                                                <label for="phone">{% trans 'Phone' %}</label>
+                                                {% render_field form.phone class=phone_class id="phone" %}
+                                                <div style="color: red">
+                                                    {{ form.phone.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.email.errors %}
+                                                    {% define 'form-control is-invalid' as email_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as email_class %}
+                                                {% endif %}
+                                                <label for="sku">{% trans 'Email' %}</label>
+                                                {% render_field form.email class=email_class id="sku" %}
+                                                <div style="color: red">
+                                                    {{ form.email.errors }}
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.facebook.errors %}
+                                                    {% define 'form-control is-invalid' as facebook_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as facebook_class %}
+                                                {% endif %}
+                                                <label for="facebook">{% trans 'Facebook' %}</label>
+                                                {% render_field form.facebook class=facebook_class id="facebook" %}
+                                                <div style="color: red">
+                                                    {{ form.facebook.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.twitter.errors %}
+                                                    {% define 'form-control is-invalid' as twitter_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as twitter_class %}
+                                                {% endif %}
+                                                <label for="twitter">{% trans 'Twitter' %}</label>
+                                                {% render_field form.twitter class=twitter_class id="twitter" %}
+                                                <div style="color: red">
+                                                    {{ form.twitter.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.instagram.errors %}
+                                                    {% define 'form-control is-invalid' as instagram_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as instagram_class %}
+                                                {% endif %}
+                                                <label for="instagram">{% trans 'Instagram' %}</label>
+                                                {% render_field form.instagram class=instagram_class id="instagram" %}
+                                                <div style="color: red">
+                                                    {{ form.instagram.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            {{ form.logo }}
+                                            <div style="color: red">
+                                                {{ form.logo.errors }}
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                {% if form.whatsapp_btn.errors %}
+                                                    {% define 'form-control is-invalid' as whatsapp_btn_class %}
+                                                {% else %}
+                                                    {% define 'form-control' as whatsapp_btn_class %}
+                                                {% endif %}
+                                                <label for="whatsapp_btn">{% trans 'Whatsapp Button' %}</label>
+                                                {% render_field form.whatsapp_btn class=whatsapp_btn_class id="whatsapp_btn" %}
+                                                <div style="color: red">
+                                                    {{ form.whatsapp_btn.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.card-body -->
+
+                                <div class="card-footer">
+                                    <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block extra_script %}
+    {% include 'AdminLte/image_script.html' %}
+{% endblock %}

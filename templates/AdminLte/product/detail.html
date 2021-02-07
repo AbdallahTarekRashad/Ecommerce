@@ -1,0 +1,116 @@
+{% extends 'AdminLte/base.html' %}
+{% load static i18n %}
+{% block body %}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>{% trans 'Product' %}</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">{% trans 'Home' %}</a></li>
+                            <li class="breadcrumb-item active">{% trans 'Product' %}</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card card-solid">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-sm-6">
+                            <h3 class="d-inline-block d-sm-none">{{ product.name }}</h3>
+                            <div class="col-12">
+                                <img src="{{ product.main_image.url }}" class="product-image" alt="Product Image">
+                            </div>
+                            <div class="col-12 product-image-thumbs">
+                                <div class="product-image-thumb active"><img src="{{ product.main_image.url }}"
+                                                                             alt="Product Image"></div>
+                                {% for img in product.images.all %}
+                                    <div class="product-image-thumb"><img src="{{ img.image.url }}" alt="Product Image">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <h3 class="my-3">{{ product.name }} - {{ product.name_ar }}</h3>
+                            <p>{{ product.description }}</p>
+
+                            <hr>
+                            <h4>{% trans 'SKU' %} : <small>{{ product.sku}}</small></h4>
+
+                            <h4>{% trans 'Available Stock' %} : <small>{{ product.stock}}</small></h4>
+
+                            <h4>{% trans 'Weight' %} : <small>{{ product.weight }} {% trans 'Kg' %}</small> </h4>
+                            <h3></h3>
+
+
+
+                            <div class="bg-gray py-2 px-3 mt-4">
+                                <h2 class="mb-0">
+                                    {% trans 'Price' %} : {{ product.price }}
+                                </h2>
+                                <h4 class="mt-0">
+                                    <small></small>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <nav class="w-100">
+                            <div class="nav nav-tabs" id="product-tab" role="tablist">
+                                <a class="nav-item nav-link active" id="product-desc-tab" data-toggle="tab"
+                                   href="#product-desc" role="tab" aria-controls="product-desc" aria-selected="true">{% trans 'Description' %}</a>
+                                <a class="nav-item nav-link" id="product-desc-tab-ar" data-toggle="tab"
+                                   href="#product-desc-ar" role="tab" aria-controls="product-desc-ar" aria-selected="false">{% trans 'Description Ar' %} </a>
+
+                            </div>
+                        </nav>
+                        <div class="tab-content p-3" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="product-desc" role="tabpanel"
+                                 aria-labelledby="product-desc-tab"> {{ product.description}}
+                            </div>
+                            <div class="tab-pane fade" id="product-desc-ar" role="tabpanel"
+                                 aria-labelledby="product-desc-tab-ar"> {{ product.description_ar }}
+                            </div>
+
+                        </div>
+                    </div>
+                <div style="text-align: right">
+                        <a style="color: white;text-decoration: unset;" class="btn btn-danger"
+                           href="{% url 'products:product_delete' product.pk %}">{% trans 'Delete' %}</a>
+                        <a style="color: white;text-decoration: unset;" class="btn btn-success"
+                           href="{% url 'products:product_update'  product.pk %}">{% trans 'Update' %}</a>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+{% endblock %}
+
+{% block extra_script %}
+    <script>
+        $(document).ready(function () {
+            $('.product-image-thumb').on('click', function () {
+                var $image_element = $(this).find('img')
+                $('.product-image').prop('src', $image_element.attr('src'))
+                $('.product-image-thumb.active').removeClass('active')
+                $(this).addClass('active')
+            })
+        })
+    </script>
+{% endblock %}
