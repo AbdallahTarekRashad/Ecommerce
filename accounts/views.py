@@ -76,7 +76,6 @@ def home(request):
     return render(request, 'AdminLte/base.html')
 
 
-
 def test(request):
     path = str(settings.BASE_DIR) + '/accounts/Cairo-Regular.ttf'
     template = get_template('accounts/test.html')
@@ -99,12 +98,11 @@ def test(request):
     return HttpResponse(pdf, content_type='application/pdf')
 
 
-
 def admin_home(request):
     return render(request, 'AdminLte/base.html')
 
-# Admin Dashboard Views
 
+# Admin Dashboard Views
 
 
 def add_permissions(request, user):
@@ -166,6 +164,35 @@ def add_permissions(request, user):
     else:
         permission = Permission.objects.get(name='Can delete Category')
         user.user_permissions.remove(permission)
+    # Brand Permission
+    brand_view = request.POST.get("brand-view", None)
+    brand_add = request.POST.get("brand-add", None)
+    brand_update = request.POST.get("brand-update", None)
+    brand_delete = request.POST.get("brand-delete", None)
+    if brand_view:
+        permission = Permission.objects.get(name='Can view Brand')
+        user.user_permissions.add(permission)
+    else:
+        permission = Permission.objects.get(name='Can view Brand')
+        user.user_permissions.remove(permission)
+    if brand_add:
+        permission = Permission.objects.get(name='Can add Brand')
+        user.user_permissions.add(permission)
+    else:
+        permission = Permission.objects.get(name='Can add Brand')
+        user.user_permissions.remove(permission)
+    if brand_update:
+        permission = Permission.objects.get(name='Can change Brand')
+        user.user_permissions.add(permission)
+    else:
+        permission = Permission.objects.get(name='Can change Brand')
+        user.user_permissions.remove(permission)
+    if brand_delete:
+        permission = Permission.objects.get(name='Can delete Brand')
+        user.user_permissions.add(permission)
+    else:
+        permission = Permission.objects.get(name='Can delete Brand')
+        user.user_permissions.remove(permission)
     # Product Permission
     product_view = request.POST.get("product-view", None)
     product_add = request.POST.get("product-add", None)
@@ -224,6 +251,35 @@ def add_permissions(request, user):
     else:
         permission = Permission.objects.get(name='Can delete User')
         user.user_permissions.remove(permission)
+    # Country Permission
+    country_view = request.POST.get("country-view", None)
+    country_add = request.POST.get("country-add", None)
+    country_update = request.POST.get("country-update", None)
+    country_delete = request.POST.get("country-delete", None)
+    if country_view:
+        permission = Permission.objects.get(name='Can view Country')
+        user.user_permissions.add(permission)
+    else:
+        permission = Permission.objects.get(name='Can view Country')
+        user.user_permissions.remove(permission)
+    if country_add:
+        permission = Permission.objects.get(name='Can add Country')
+        user.user_permissions.add(permission)
+    else:
+        permission = Permission.objects.get(name='Can add Country')
+        user.user_permissions.remove(permission)
+    if country_update:
+        permission = Permission.objects.get(name='Can change Country')
+        user.user_permissions.add(permission)
+    else:
+        permission = Permission.objects.get(name='Can change Country')
+        user.user_permissions.remove(permission)
+    if country_delete:
+        permission = Permission.objects.get(name='Can delete Country')
+        user.user_permissions.add(permission)
+    else:
+        permission = Permission.objects.get(name='Can delete Country')
+        user.user_permissions.remove(permission)
     # SiteInfo Permission
     siteinfo_update = request.POST.get("site_info-update", None)
     if siteinfo_update:
@@ -245,10 +301,8 @@ class SiteInfoUpdateView(LoginRequiredMixin, UpdateView):
     model = SiteInfo
     template_name = 'AdminLte/site_info/form.html'
 
-
     def get_object(self, queryset=None):
         return SiteInfo.objects.all().first()
-
 
     def get_form(self, form_class=None):
         form = super(SiteInfoUpdateView, self).get_form()
@@ -256,10 +310,8 @@ class SiteInfoUpdateView(LoginRequiredMixin, UpdateView):
         form.fields['logo'].widget.template_name = 'AdminLte/clearable_file_input.html'
         return form
 
-
     def get_success_url(self):
         return reverse_lazy('accounts:site_info')
-
 
 
 # Admin Account Views
@@ -276,8 +328,8 @@ class AccountListView(LoginRequiredMixin, TemplateView):
 
 @method_decorator(permission_required('accounts.view_user', raise_exception=True), name='dispatch')
 class AccountListJson(LoginRequiredMixin, BaseDatatableView):
-    columns = ['id', 'username', 'email', 'full_name', 'birth_date', 'image']
-    order_columns = ['id', 'username', 'email', 'full_name', 'birth_date', 'image']
+    columns = ['id', 'username', 'email', 'full_name', 'birth_date', 'is_active', 'image']
+    order_columns = ['id', 'username', 'email', 'full_name', 'birth_date', 'is_active', 'image']
     max_display_length = 30
     model = User
 
@@ -318,6 +370,7 @@ class AccountCreateView(LoginRequiredMixin, CreateView):
     # to edit form fields that class generate
     def get_form(self, form_class=None):
         form = super(AccountCreateView, self).get_form()
+        # another solution but i not used
         # form.fields['user_permissions'].queryset = Permission.objects.filter(Q(content_type__model='user') |
         #                                                                      Q(content_type__model='category') |
         #                                                                      Q(content_type__model='option') |
@@ -443,5 +496,3 @@ class CountryDeleteView(LoginRequiredMixin, DeleteView):
     context_object_name = 'country'
     success_url = reverse_lazy('accounts:country_list')
     template_name = 'AdminLte/country/delete.html'
-
-

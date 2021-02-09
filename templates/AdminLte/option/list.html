@@ -102,13 +102,23 @@
                 ],
                 {% if delete %}
                     columnDefs: [
-                        {targets: [2, 3, 4, 5], orderable: true, searchable: true},
-                        {targets: [0, 1], orderable: false, searchable: false}
+                        {
+                            targets: [2, 3, 4, 5],
+                            className: 'align-middle text-center',
+                            orderable: true,
+                            searchable: true
+                        },
+                        {targets: [0, 1], className: 'align-middle text-center', orderable: false, searchable: false}
                     ],
                 {% else %}
                     columnDefs: [
-                        {targets: [1, 2, 3, 4], orderable: true, searchable: true},
-                        {targets: [0], orderable: false, searchable: false}
+                        {
+                            targets: [1, 2, 3, 4],
+                            className: 'align-middle text-center',
+                            orderable: true,
+                            searchable: true
+                        },
+                        {targets: [0], className: 'align-middle text-center', orderable: false, searchable: false}
                     ],
                 {% endif %}
 
