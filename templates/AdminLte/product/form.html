@@ -180,6 +180,21 @@
 
                                         </div>
                                     </div>
+
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label for="brand">{% trans 'Brand' %}</label>
+                                                {% trans 'Select Brand' as brand %}
+                                                {% render_field form.brand class="select2"  data-placeholder=brand style="width: 100%;" %}
+                                                <div style="color: red">
+                                                    {{ form.brand.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
                                     <div class="row">
                                         <div class="col-6">
                                             {{ form.main_image }}

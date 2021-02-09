@@ -3,7 +3,7 @@ from django.urls import path, include
 from .views import OptionUpdateView, OptionCreateView, OptionDetailView, OptionListView, OptionListJson, \
     ProductCreateView, ProductDetailView, ProductUpdateView, ProductListJson, ProductListView, CategoryListView, \
     CategoryDetailView, CategoryCreateView, CategoryListJson, CategoryUpdateView, ProductDeleteView, CategoryDeleteView, \
-    OptionDeleteView
+    OptionDeleteView, BrandListView, BrandListJson, BrandDetailView, BrandUpdateView, BrandCreateView, BrandDeleteView
 
 app_name = 'products'
 urlpatterns = [
@@ -22,6 +22,14 @@ urlpatterns = [
     path('seller/category/update/<int:pk>/', CategoryUpdateView.as_view(), name='category_update'),
     path('seller/category/add', CategoryCreateView.as_view(), name='category_add'),
     path('seller/category/delete/<int:pk>', CategoryDeleteView.as_view(), name='category_delete'),
+
+    # Brand Admin Urls
+    path('seller/brand/', BrandListView.as_view(), name='brand_list'),
+    path('seller/brand/data/', BrandListJson.as_view(), name='brand_list_data'),
+    path('seller/brand/<int:pk>/', BrandDetailView.as_view(), name='brand_detail'),
+    path('seller/brand/update/<int:pk>/', BrandUpdateView.as_view(), name='brand_update'),
+    path('seller/brand/add', BrandCreateView.as_view(), name='brand_add'),
+    path('seller/brand/delete/<int:pk>', BrandDeleteView.as_view(), name='brand_delete'),
 
     # Product Admin Urls
     path('seller/product/', ProductListView.as_view(), name='product_list'),

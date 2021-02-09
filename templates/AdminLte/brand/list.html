@@ -4,18 +4,18 @@
     {% include 'AdminLte/datatable_head.html' %}
 {% endblock %}
 {% block body %}
-    {% define perms.products.delete_category as delete %}
+    {% define perms.products.delete_brand as delete %}
     <div class="content-wrapper">
         <section class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>{% trans "Category" %}</h1>
+                        <h1>{% trans "Brand" %}</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">{% trans 'Home' %}</a></li>
-                            <li class="breadcrumb-item active">{% trans 'Category' %}</li>
+                            <li class="breadcrumb-item active">{% trans 'Brand' %}</li>
                         </ol>
                     </div>
                 </div>
@@ -69,17 +69,17 @@
 
 {% endblock %}
 {% block extra_script %}
-    {% define perms.products.add_category as add %}
-    {% define perms.products.delete_category as delete %}
-    {% define perms.products.change_category as update %}
+    {% define perms.products.add_brand as add %}
+    {% define perms.products.delete_brand as delete %}
+    {% define perms.products.change_brand as update %}
     {% include 'AdminLte/datatable_scripts.html' with add_perm=add del_perm=delete up_perm=update %}
     <script>
         {% if update %}
-            const link = '/seller/category/update/';
+            const link = '/seller/brand/update/';
             {# for num_render function in AdminLte/datatable_scripts.html #}
         {% endif %}
         {% if add %}
-            const addLink = '{% url 'products:category_add' %}';
+            const addLink = '{% url 'products:brand_add' %}';
             {# for addBtn function in AdminLte/datatable_scripts.html #}
         {% endif %}
         $(document).ready(function () {
@@ -132,7 +132,7 @@
                 serverSide: true,
                 stateSave: false,
                 ajax: {
-                    'url': '{% url "products:category_list_data" %}',
+                    'url': '{% url "products:brand_list_data" %}',
                     'data': function (data) {
                     }
                 }

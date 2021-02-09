@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import (TemplateView, DetailView,
                                   CreateView, UpdateView, DeleteView)
 from django_datatables_view.base_datatable_view import BaseDatatableView
-from .models import Option, Product, Category, ProductImages
+from .models import Option, Product, Category, ProductImages, Brand
 from django.contrib.auth.decorators import permission_required
 from django.utils.decorators import method_decorator
 
@@ -200,6 +200,100 @@ class CategoryDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'AdminLte/category/delete.html'
 
 
+# Brand Views
+@method_decorator(permission_required('products.view_brand', raise_exception=True), name='dispatch')
+class BrandListView(LoginRequiredMixin, TemplateView):
+    template_name = 'AdminLte/brand/list.html'
+
+    # for post request in delete
+    @method_decorator(permission_required('products.delete_brand', raise_exception=True), name='dispatch')
+    def post(self, request):
+        multi_delete(request, Brand)
+        return redirect('products:brand_list')
+
+
+@method_decorator(permission_required('products.view_brand', raise_exception=True), name='dispatch')
+class BrandListJson(LoginRequiredMixin, BaseDatatableView):
+    columns = ['id', 'name', 'name_ar', 'description', 'description_ar', 'image']
+    order_columns = ['id', 'name', 'name_ar', 'description', 'description_ar', 'image']
+    max_display_length = 30
+    model = Brand
+
+    def render_column(self, row, column):
+        if column == 'image':
+            return str(row.image.url)
+        else:
+            return super().render_column(row, column)
+
+    def get_initial_queryset(self):
+        return Brand.objects.all().order_by('-created_at')
+
+    def filter_queryset(self, qs):
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(name__icontains=search) |
+                Q(name_ar__icontains=search) |
+                Q(description__icontains=search) |
+                Q(description_ar__icontains=search)
+            )
+        return qs
+
+
+@method_decorator(permission_required('products.view_brand', raise_exception=True), name='dispatch')
+class BrandDetailView(LoginRequiredMixin, DetailView):
+    context_object_name = 'brand'
+    model = Brand
+    template_name = 'AdminLte/brand/detail.html'
+
+
+@method_decorator(permission_required('products.add_brand', raise_exception=True), name='dispatch')
+class BrandCreateView(LoginRequiredMixin, CreateView):
+    fields = ('name', 'name_ar', 'description', 'description_ar', 'image')
+    model = Brand
+    template_name = 'AdminLte/brand/form.html'
+
+    # to edit form fields that class generate
+    def get_form(self, form_class=None):
+        form = super(BrandCreateView, self).get_form()
+        form.fields['description'] = forms.CharField(widget=forms.Textarea)
+        form.fields['description_ar'] = forms.CharField(widget=forms.Textarea)
+        # overwrite template name of image filed widget to customize design
+        form.fields['image'].widget.template_name = 'AdminLte/clearable_file_input.html'
+        return form
+
+    def get_success_url(self):
+        if self.request.POST.get('another', None):
+            return reverse_lazy('products:brand_add')
+        return reverse_lazy('products:brand_detail', kwargs={'pk': self.object.pk})
+
+
+@method_decorator(permission_required('products.change_brand', raise_exception=True), name='dispatch')
+class BrandUpdateView(LoginRequiredMixin, UpdateView):
+    fields = ('name', 'name_ar', 'description', 'description_ar', 'image')
+    model = Brand
+    template_name = 'AdminLte/brand/form.html'
+
+    # to edit form fields that class generate
+    def get_form(self, form_class=None):
+        form = super(BrandUpdateView, self).get_form()
+        form.fields['description'] = forms.CharField(widget=forms.Textarea)
+        form.fields['description_ar'] = forms.CharField(widget=forms.Textarea)
+        # overwrite template name of image filed widget to customize design
+        form.fields['image'].widget.template_name = 'AdminLte/clearable_file_input.html'
+        return form
+
+    def get_success_url(self):
+        return reverse_lazy('products:brand_detail', kwargs={'pk': self.object.pk})
+
+
+@method_decorator(permission_required('products.delete_brand', raise_exception=True), name='dispatch')
+class BrandDeleteView(LoginRequiredMixin, DeleteView):
+    model = Brand
+    success_url = reverse_lazy('products:brand_list')
+    template_name = 'AdminLte/brand/delete.html'
+
+
 # Product Views
 @method_decorator(permission_required('products.view_product', raise_exception=True), name='dispatch')
 class ProductListView(LoginRequiredMixin, TemplateView):
@@ -257,7 +351,7 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
 class ProductCreateView(LoginRequiredMixin, CreateView):
     fields = (
         'name', 'name_ar', 'description', 'description_ar', 'sku', 'price', 'weight', 'stock', 'main_image',
-        'categories', 'options')
+        'categories', 'options', 'brand')
     model = Product
     template_name = 'AdminLte/product/form.html'
 
