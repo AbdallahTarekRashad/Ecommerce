@@ -127,11 +127,32 @@
             extend: 'excel',
             text: '{% trans 'Excel' %}'
         },
+
         {
             extend: 'print',
             text: '{% trans 'Print' %}',
+            title:'{{site_info.name}}',
+            autoPrint: false,
+            repeatingHead: {
+                logo: 'assets/dist/img/report-logo.png',
+                logoPosition: 'right',
+                logoStyle: '',
+                title: 'test'
+            },
             exportOptions: {
-                columns: ':visible'
+                columns: ':visible',
+                stripHtml: false
+            },
+            customize: function (win) {
+                $(win.document.body)
+                    .css('font-size', '10pt')
+                    .prepend(
+                        '<img src="{{request.scheme}}://{{request.META.HTTP_HOST}}{{ site_info.logo.url }}" style="position:absolute; top:20%; left:25%;max-height: 500px;opacity: 0.5;" />'
+                    );
+
+                $(win.document.body).find('table')
+                    .addClass('compact')
+                    .css('font-size', 'inherit');
             }
         },
         {
@@ -146,10 +167,17 @@
         let flag = true
         function selectAll(e, dt, node, config) {
             $("#example1 input[type=checkbox]").each(function () {
-                if (flag) {$(this).prop('checked', true);}
-                else {$(this).prop('checked', false);}
+                if (flag) {
+                    $(this).prop('checked', true);
+                } else {
+                    $(this).prop('checked', false);
+                }
             });
-            if (flag) {flag =false} else {flag =true}
+            if (flag) {
+                flag = false
+            } else {
+                flag = true
+            }
         }
         function delBtn() {
             const selected = new Array();

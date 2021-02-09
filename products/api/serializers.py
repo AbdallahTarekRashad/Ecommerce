@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from products.models import Product, Option, Category, ProductImages
+from products.models import Product, Option, Category, ProductImages, Brand
 
 
 class OptionSerializer(serializers.ModelSerializer):
@@ -11,6 +11,12 @@ class OptionSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
+        fields = ['id', 'name', 'name_ar', 'description', 'description_ar', 'image']
+
+
+class BrandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
         fields = ['id', 'name', 'name_ar', 'description', 'description_ar', 'image']
 
 
@@ -26,7 +32,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'sku', 'name', 'name_ar', 'description', 'description_ar', 'price',
-                  'stock', 'weight', 'main_image', 'images', 'categories', 'options']
+                  'stock', 'weight', 'main_image', 'images', 'categories', 'options', 'brand']
 
     def to_internal_value(self, data):
         # override many to many field by get from form-data as string separated by ',' and split it to list and set
