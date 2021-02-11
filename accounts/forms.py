@@ -10,7 +10,14 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('email', 'birth_date', 'first_name', 'last_name', 'image', 'billing_address',
-                  'default_shipping_address', 'country', 'phone', 'gender', 'username', 'user_permissions', 'is_active')
+                  'default_shipping_address', 'country', 'phone', 'gender', 'username', 'user_permissions')
+
+
+class CustomUserAdminCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('email', 'birth_date', 'first_name', 'last_name', 'image', 'billing_address',
+                  'default_shipping_address', 'country', 'phone', 'gender', 'username', 'user_permissions','is_active')
 
 
 class UserChangeForm(forms.ModelForm):
@@ -47,6 +54,13 @@ class UserChangeForm(forms.ModelForm):
             user.save()
         return user
 
+    class Meta:
+        model = User
+        fields = ('email', 'birth_date', 'first_name', 'last_name', 'image', 'billing_address',
+                  'default_shipping_address', 'country', 'phone', 'gender', 'username', 'user_permissions',)
+
+
+class UserAdminChangeForm(UserChangeForm):
     class Meta:
         model = User
         fields = ('email', 'birth_date', 'first_name', 'last_name', 'image', 'billing_address',

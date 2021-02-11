@@ -99,7 +99,8 @@
                         </div>
                         <div class="header__top__right__auth">
                             {% if not user.is_authenticated %}
-                                <a href="{% url 'accounts:signup' %}"><i class="fa fa-sign-in"></i> {% trans 'Signup' %} </a>
+                                <a href="{% url 'accounts:signup' %}"><i class="fa fa-sign-in"></i> {% trans 'Signup' %}
+                                </a>
                             {% endif %}
 
                         </div>
@@ -127,8 +128,8 @@
             <div class="col-lg-3">
                 <div class="header__cart">
                     <ul>
-                        <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
-                        <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
+                        <li><a href="#"><i class="fa fa-heart"></i> <span id="wish_count">{{ wish_count }}</span></a></li>
+                        <li><a href="#"><i class="fa fa-shopping-bag"></i> <span id="cart_count" >{{ cart_count }}</span></a></li>
                     </ul>
                     <div class="header__cart__price">item: <span>$150.00</span></div>
                 </div>
@@ -152,17 +153,9 @@
                         <span>All departments</span>
                     </div>
                     <ul>
-                        <li><a href="#">Fresh Meat</a></li>
-                        <li><a href="#">Vegetables</a></li>
-                        <li><a href="#">Fruit & Nut Gifts</a></li>
-                        <li><a href="#">Fresh Berries</a></li>
-                        <li><a href="#">Ocean Foods</a></li>
-                        <li><a href="#">Butter & Eggs</a></li>
-                        <li><a href="#">Fastfood</a></li>
-                        <li><a href="#">Fresh Onion</a></li>
-                        <li><a href="#">Papayaya & Crisps</a></li>
-                        <li><a href="#">Oatmeal</a></li>
-                        <li><a href="#">Fresh Bananas</a></li>
+                        {% for c in categories %}
+                            <li><a href="#">{{ c.name }}</a></li>
+                        {% endfor %}
                     </ul>
                 </div>
             </div>

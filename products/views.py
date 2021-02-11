@@ -1,17 +1,16 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django import forms
+from django.http import JsonResponse, Http404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import (TemplateView, DetailView,
-                                  CreateView, UpdateView, DeleteView)
+from django.views.generic import (TemplateView, DetailView, CreateView, UpdateView, DeleteView, ListView)
 from django_datatables_view.base_datatable_view import BaseDatatableView
-from .models import Option, Product, Category, ProductImages, Brand
+from .models import Option, Product, Category, ProductImages, Brand, Cart, CartProduct, WishList
 from django.contrib.auth.decorators import permission_required
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 
-
-# Create your views here.
 
 # delete function used in list Views for multiple deletion
 def multi_delete(request, model):
@@ -351,7 +350,7 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
 class ProductCreateView(LoginRequiredMixin, CreateView):
     fields = (
         'name', 'name_ar', 'description', 'description_ar', 'sku', 'price', 'weight', 'stock', 'main_image',
-        'categories', 'options', 'brand')
+        'categories', 'options', 'brand', 'show')
     model = Product
     template_name = 'AdminLte/product/form.html'
 
@@ -377,14 +376,14 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         if self.request.POST.get('another', None):
             return reverse_lazy('products:product_add')
-        return reverse_lazy('products:product_detail', kwargs={'pk': self.object.pk})
+        return reverse_lazy('products:product_list')
 
 
 @method_decorator(permission_required('products.change_product', raise_exception=True), name='dispatch')
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
     fields = (
         'name', 'name_ar', 'description', 'description_ar', 'sku', 'price', 'weight', 'stock', 'main_image',
-        'categories', 'options')
+        'categories', 'options', 'brand', 'show')
     model = Product
     template_name = 'AdminLte/product/form.html'
 
@@ -397,7 +396,7 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
         return form
 
     def get_success_url(self):
-        return reverse_lazy('products:product_detail', kwargs={'pk': self.object.pk})
+        return reverse_lazy('products:product_list')
 
     def post(self, request, *args, **kwargs):
         super(ProductUpdateView, self).post(request, *args, **kwargs)
@@ -420,4 +419,114 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('products:product_list')
     template_name = 'AdminLte/product/delete.html'
 
+
 # End Admin Dashboard Views
+
+
+# Site Views
+class ProductView(DetailView):
+    context_object_name = 'product'
+    model = Product
+    template_name = 'product/detail.html'
+    queryset = Product.view_object.all()
+
+    def get_context_data(self, **kwargs):
+        context = super(ProductView, self).get_context_data(**kwargs)
+        relate_products = Product.view_object.all().filter(categories__in=self.object.categories.all()).distinct(
+            'pk').exclude(pk=self.object.pk)[:4]
+        context.update({'relate_products': relate_products})
+        return context
+
+
+# Ajax View Response just json
+def add_cart(request):
+    product_id = request.GET.get('product_id', None)
+    quantity = request.GET.get('quantity', None)
+    product = Product.view_object.get(id=product_id)
+    if product_id and quantity and product:
+        # Add to cart in database if user is authenticated
+        if request.user.is_authenticated:
+            cart = Cart.objects.get_or_create(user=request.user)[0]
+            try:
+                # because  cart and product_id is unique together and if add product more than one time just update
+                # quantity
+                CartProduct.objects.create(cart=cart, product_id=product_id,
+                                           quantity=quantity)
+            except:
+                cart_product = CartProduct.objects.get(cart=cart, product_id=product_id)
+                cart_product.quantity = quantity
+                cart_product.save()
+            cart_count = cart.products.count()
+        # Add to cart in session if user is not authenticated
+        else:
+            cart = request.session.get('cart', None)
+            if cart is None:
+                cart = []
+            else:
+                # because  cart and product_id is unique together and if add product more than one time just update
+                # quantity
+                for p in cart:
+                    if p['product_id'] == product_id:
+                        p['quantity'] = quantity
+            cart_product = {
+                'product_id': product_id,
+                'quantity': quantity
+            }
+            cart.append(cart_product)
+            request.session['cart'] = cart
+            cart_count = cart.__len__()
+        data = {'cart_count': cart_count}
+        return JsonResponse(data)
+    return Http404('not found')
+
+
+# Ajax View Response just json
+def add_wish(request):
+    product_id = request.GET.get('product_id', None)
+    product = Product.view_object.get(id=product_id)
+    if product_id and product:
+        massage = False
+        # Add to WishList in database if user is authenticated
+        if request.user.is_authenticated:
+            wish = WishList.objects.get_or_create(user=request.user)[0]
+            product = Product.objects.get(pk=product_id)
+            if product in wish.products.all():
+                # to add product to wish list just one time
+                massage = _('Product in wish list')
+            else:
+                wish.products.add(product)
+
+            wish_count = wish.products.count()
+        # Add to WishList in session if user is not authenticated
+        else:
+            wish = request.session.get('wish', None)
+            if wish is None:
+                wish = []
+            else:
+                # to add product to wish list just one time
+                if product_id in wish:
+                    massage = _('Product in wish list')
+            wish.append(product_id)
+            request.session['wish'] = wish
+            wish_count = wish.__len__()
+        data = {'wish_count': wish_count, 'massage': massage}
+        return JsonResponse(data)
+
+    return Http404('not found')
+
+
+class ShopView(ListView):
+    model = Product
+    template_name = 'product/shop.html'
+    context_object_name = 'products'
+    paginate_by = 12
+    queryset = Product.view_object.all()
+
+    def get_queryset(self):
+        queryset = super(ShopView, self).get_queryset()
+        category = self.request.GET.get('category', None)
+        if category:
+            queryset = queryset.filter(categories=category)
+        return queryset
+
+# End Site Views

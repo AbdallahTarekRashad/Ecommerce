@@ -85,6 +85,28 @@
         {% endif %}
         $(document).ready(function () {
             $('#example1').dataTable({
+                initComplete: function () {
+                    this.api().columns({% if delete %}6{% else %}5{% endif %}).every(function () {
+                        var column = this;
+                        var select = $('<select style="margin-left: 15px"><option value=""></option></select>')
+                            .appendTo($(column.header()))
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+                                column.search(val).draw();
+                            });
+                        column.data().unique().sort().each(function (d, j) {
+                            var a = ''
+                            if (d == 'True') {
+                                a = '{% trans 'Active' %}'
+                            } else {
+                                a = '{% trans 'Inactive' %}'
+                            }
+                            select.append('<option value="' + d + '">' + a + '</option>')
+                        });
+                    });
+                },
                 responsive: true,
                 autoWidth: true,
                 lengthMenu: lengthMenu,
@@ -120,13 +142,13 @@
                 {% if delete %}
                     columnDefs: [
                         {
-                            targets: [2, 3, 4, 5],
+                            targets: [2, 3, 5],
                             className: 'align-middle text-center',
                             orderable: true,
                             searchable: true
                         },
                         {
-                            targets: [0, 1, 6, 7],
+                            targets: [0, 1, 4, 6, 7],
                             className: 'align-middle text-center',
                             orderable: false,
                             searchable: false
@@ -135,16 +157,17 @@
                 {% else %}
                     columnDefs: [
                         {
-                            targets: [1, 2, 3, 4],
+                            targets: [1, 2, 4],
                             className: 'align-middle text-center',
                             orderable: true,
                             searchable: true
                         },
                         {
-                            targets: [0, 5, 6],
+                            targets: [0, 3, 5, 6],
                             className: 'align-middle text-center',
                             orderable: false,
-                            searchable: false}
+                            searchable: false
+                        }
                     ],
                 {% endif %}
                 searching: true,
@@ -154,9 +177,10 @@
                 ajax: {
                     'url': '{% url "accounts:account_list_data" %}',
                     'data': function (data) {
+
                     }
                 }
-            })
+            });
         });
     </script>
 {% endblock %}

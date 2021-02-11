@@ -7,24 +7,18 @@ from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
-from django.template.loader import get_template
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView, TemplateView, DeleteView
 from django_datatables_view.base_datatable_view import BaseDatatableView
-
-from accounts.forms import CustomUserCreationForm, UserChangeForm
+from accounts.forms import CustomUserCreationForm, UserChangeForm, CustomUserAdminCreationForm, UserAdminChangeForm
 from accounts.models import SiteInfo, User, Country
-from django import forms
-
+from products.models import Category, Product
 from products.views import multi_delete
-import os
 from django.conf import settings
 from django.http import HttpResponse
 from django.template.loader import get_template
-import datetime
 from xhtml2pdf import pisa
-
 from arabic_reshaper import ArabicReshaper
 from bidi.algorithm import get_display
 
@@ -43,7 +37,8 @@ class SignUpView(CreateView):
     # overwrite form_valid function to login after save object
     def form_valid(self, form):
         response = super(SignUpView, self).form_valid(form)
-        login(self.request, self.object)
+        user = authenticate(username=self.object.email, password=self.object.password)
+        login(self.request, self.object, 'django.contrib.auth.backends.ModelBackend')
         return response
 
 
@@ -73,10 +68,15 @@ def login_view(request):
 
 
 def home(request):
-    return render(request, 'AdminLte/base.html')
+    categories = Category.objects.all()[:11]
+    products = Product.objects.filter(categories__in=categories).distinct('pk')[:12]
+    latest_products = Product.objects.all().order_by('created_at')[:18]
+    context = {'products': products, 'latest_products': latest_products}
+    return render(request, 'index.html', context=context)
 
 
 def test(request):
+    # this view for generate PDF file with Arabic context
     path = str(settings.BASE_DIR) + '/accounts/Cairo-Regular.ttf'
     template = get_template('accounts/test.html')
     html = template.render(context={'path': path})
@@ -350,6 +350,9 @@ class AccountListJson(LoginRequiredMixin, BaseDatatableView):
 
     def filter_queryset(self, qs):
         search = self.request.GET.get('search[value]', None)
+        is_active = self.request.GET.get('columns[6][search][value]', None)
+        if not is_active:
+            is_active = self.request.GET.get('columns[5][search][value]', None)
         if search:
             qs = qs.filter(
                 Q(username__icontains=search) |
@@ -358,6 +361,8 @@ class AccountListJson(LoginRequiredMixin, BaseDatatableView):
                 Q(last_name__icontains=search) |
                 Q(birth_date__icontains=search)
             )
+        if is_active:
+            qs = qs.filter(is_active=is_active)
         return qs
 
 
@@ -365,7 +370,7 @@ class AccountListJson(LoginRequiredMixin, BaseDatatableView):
 class AccountCreateView(LoginRequiredMixin, CreateView):
     model = User
     template_name = 'AdminLte/account/form.html'
-    form_class = CustomUserCreationForm
+    form_class = CustomUserAdminCreationForm
 
     # to edit form fields that class generate
     def get_form(self, form_class=None):
@@ -398,7 +403,7 @@ class AccountCreateView(LoginRequiredMixin, CreateView):
 
 @method_decorator(permission_required('accounts.change_user', raise_exception=True), name='dispatch')
 class AccountUpdateView(LoginRequiredMixin, UpdateView):
-    form_class = UserChangeForm
+    form_class = UserAdminChangeForm
     model = User
     template_name = 'AdminLte/account/form.html'
     context_object_name = 'account'

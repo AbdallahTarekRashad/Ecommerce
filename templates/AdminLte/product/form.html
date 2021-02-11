@@ -192,9 +192,16 @@
                                                 </div>
                                             </div>
                                         </div>
-
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label for="show">{% trans 'Show' %}</label>
+                                                {% render_field form.show class="form-control" %}
+                                                <div style="color: red">
+                                                    {{ form.show.errors }}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-
                                     <div class="row">
                                         <div class="col-6">
                                             {{ form.main_image }}

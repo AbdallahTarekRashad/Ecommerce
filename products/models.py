@@ -1,9 +1,14 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-from django.utils import timezone
 
 from accounts.models import User
+
+
+class ViewManager(models.Manager):
+    def get_queryset(self):
+        return super(ViewManager, self).get_queryset().filter(Q(stock__gte=1) & Q(show=True))
 
 
 class BaseModel(models.Model):
@@ -68,9 +73,13 @@ class Product(BaseModel):
     description_ar = models.CharField(max_length=500, verbose_name=_('description ar'))
     main_image = models.ImageField(upload_to='product/', verbose_name=_('main image'))
     stock = models.PositiveIntegerField(verbose_name=_('stock'))
-    categories = models.ManyToManyField(Category, related_name='products')
-    options = models.ManyToManyField(Option, related_name='products')
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, blank=True, null=True, related_name='products')
+    categories = models.ManyToManyField(Category, related_name='products', verbose_name=_('categories'))
+    options = models.ManyToManyField(Option, related_name='products', verbose_name=_('options'))
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, blank=True, null=True, related_name='products',
+                              verbose_name=_('brand'))
+    show = models.BooleanField(default=True, verbose_name=_('show'))
+    objects = models.Manager()
+    view_object = ViewManager()  # for Site Views
 
     class Meta:
         verbose_name = _('Product')
@@ -103,7 +112,15 @@ class ProductReview(BaseModel):
 
 class Cart(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart')
-    products = models.ManyToManyField(Product, related_name='cart')
+
+
+class CartProduct(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='cart_product')
+    quantity = models.IntegerField(verbose_name=_('quantity'), default=1)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='products')
+
+    class Meta:
+        unique_together = ('product', 'cart',)
 
 
 class WishList(BaseModel):

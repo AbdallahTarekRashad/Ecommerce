@@ -227,15 +227,16 @@
     /*--------------------------
         Select
     ----------------------------*/
-    $("select").niceSelect();
+    // $("select").niceSelect();
 
     /*------------------
 		Single Product
 	--------------------*/
     $('.product__details__pic__slider img').on('click', function () {
 
-        var imgurl = $(this).data('imgbigurl');
+        var imgurl = $(this).attr('src');
         var bigImg = $('.product__details__pic__item--large').attr('src');
+
         if (imgurl != bigImg) {
             $('.product__details__pic__item--large').attr({
                 src: imgurl

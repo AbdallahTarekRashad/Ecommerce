@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 {#<script src="{% static 'js/jquery.nice-select.min.js' %}"></script>#}
@@ -8,3 +8,55 @@
 <script src="{% static 'js/mixitup.min.js' %}"></script>
 <script src="{% static 'js/owl.carousel.min.js' %}"></script>
 <script src="{% static 'js/main.js' %}"></script>
+<script src="{% static 'AdminLte/plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+
+<script>
+    var Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 5000
+    });
+
+    function add_cart(btn, quantity = false) {
+        let product_id = btn.getAttribute('product_id');
+        let q = 1
+        if (quantity) {
+            q = quantity.value;
+        }
+        $.ajax({
+            url: '{% url 'products:add_cart' %}',
+            data:
+                {
+                    'product_id': product_id,
+                    'quantity': q
+                },
+            success: function (data, status, xhr) {
+                document.getElementById('cart_count').innerText = data.cart_count
+                Toast.fire({
+                    icon: 'success',
+                    text: '{% trans 'Cart Updated' %}'
+                })
+
+            }
+        });
+    }
+
+    function add_wish(btn) {
+        let product_id = btn.getAttribute('product_id');
+
+        $.ajax({
+            url: '{% url 'products:add_wish' %}',
+            data:{'product_id': product_id,                },
+            success: function (data, status, xhr) {
+                document.getElementById('wish_count').innerText = data.wish_count
+                Toast.fire({
+                    icon: 'success',
+                    text: '{% trans 'Wish List Updated' %}'
+                })
+
+            }
+        });
+    }
+
+</script>

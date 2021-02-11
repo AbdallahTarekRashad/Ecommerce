@@ -98,7 +98,7 @@ TEMPLATES = [
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
                 # for site_info
-                'accounts.context_processors.site_info',
+                'accounts.context_processors.basic_info',
             ],
             'libraries': {
                 'extra_tags': 'templatetags.extra_tags',

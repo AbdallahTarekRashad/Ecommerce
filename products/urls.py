@@ -3,7 +3,8 @@ from django.urls import path, include
 from .views import OptionUpdateView, OptionCreateView, OptionDetailView, OptionListView, OptionListJson, \
     ProductCreateView, ProductDetailView, ProductUpdateView, ProductListJson, ProductListView, CategoryListView, \
     CategoryDetailView, CategoryCreateView, CategoryListJson, CategoryUpdateView, ProductDeleteView, CategoryDeleteView, \
-    OptionDeleteView, BrandListView, BrandListJson, BrandDetailView, BrandUpdateView, BrandCreateView, BrandDeleteView
+    OptionDeleteView, BrandListView, BrandListJson, BrandDetailView, BrandUpdateView, BrandCreateView, BrandDeleteView, \
+    ProductView, add_cart, add_wish, ShopView
 
 app_name = 'products'
 urlpatterns = [
@@ -42,4 +43,14 @@ urlpatterns = [
     # Product Api
     path('', include('products.api.urls', namespace='products_api')),
 
+    # Site Urls
+    path('product/<int:pk>/', ProductView.as_view(), name='product'),
+
+    # Ajax Add to cart
+    path('ajax/add_cart/', add_cart, name='add_cart'),
+    # Ajax Add to wishlist
+    path('ajax/add_wish/', add_wish, name='add_wish'),
+    # Shop View
+    path('shop/', ShopView.as_view(), name='shop')
+    # End Site Urls
 ]

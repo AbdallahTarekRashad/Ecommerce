@@ -38,6 +38,7 @@ urlpatterns = [
          name='password_reset_confirm'),
     # Home Dirs
     path('', home, name='home'),
+
     path('test', test, name='test'),
 
     # Admin Dashboard Urls
