@@ -111,7 +111,8 @@ class ProductReview(BaseModel):
 
 
 class Cart(BaseModel):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart')
+    user = models.OneToOneField(User, blank=True, null=True, on_delete=models.CASCADE, related_name='cart')
+    session_key = models.CharField(max_length=100, unique=True, blank=True, null=True, verbose_name=_('session key'))
 
 
 class CartProduct(models.Model):
@@ -124,5 +125,7 @@ class CartProduct(models.Model):
 
 
 class WishList(BaseModel):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='wishlist')
+    user = models.OneToOneField(User, blank=True, null=True, on_delete=models.CASCADE, related_name='wishlist')
+    session_key = models.CharField(max_length=100, unique=True, blank=True, null=True, verbose_name=_('session key'))
     products = models.ManyToManyField(Product, related_name='wishlist')
+

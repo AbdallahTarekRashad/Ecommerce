@@ -129,7 +129,7 @@
                 <div class="header__cart">
                     <ul>
                         <li><a href="#"><i class="fa fa-heart"></i> <span id="wish_count">{{ wish_count }}</span></a></li>
-                        <li><a href="#"><i class="fa fa-shopping-bag"></i> <span id="cart_count" >{{ cart_count }}</span></a></li>
+                        <li><a href="{% url 'products:cart' %}"><i class="fa fa-shopping-bag"></i> <span id="cart_count" >{{ cart_count }}</span></a></li>
                     </ul>
                     <div class="header__cart__price">item: <span>$150.00</span></div>
                 </div>

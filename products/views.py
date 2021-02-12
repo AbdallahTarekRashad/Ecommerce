@@ -1,8 +1,10 @@
+import json
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django import forms
 from django.http import JsonResponse, Http404
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import (TemplateView, DetailView, CreateView, UpdateView, DeleteView, ListView)
 from django_datatables_view.base_datatable_view import BaseDatatableView
@@ -444,37 +446,76 @@ def add_cart(request):
     quantity = request.GET.get('quantity', None)
     product = Product.view_object.get(id=product_id)
     if product_id and quantity and product:
-        # Add to cart in database if user is authenticated
+        # Add to cart in database if user is authenticated by user
         if request.user.is_authenticated:
             cart = Cart.objects.get_or_create(user=request.user)[0]
-            try:
-                # because  cart and product_id is unique together and if add product more than one time just update
-                # quantity
-                CartProduct.objects.create(cart=cart, product_id=product_id,
-                                           quantity=quantity)
-            except:
-                cart_product = CartProduct.objects.get(cart=cart, product_id=product_id)
-                cart_product.quantity = quantity
-                cart_product.save()
-            cart_count = cart.products.count()
-        # Add to cart in session if user is not authenticated
+        # Add to cart in database if user is not authenticated by session key
         else:
-            cart = request.session.get('cart', None)
-            if cart is None:
-                cart = []
+            if not request.session.exists(request.session.session_key):
+                request.session.create()
+            # print(request.session.session_key)
+            cart = Cart.objects.get_or_create(session_key=request.session.session_key)[0]
+        try:
+            # because  cart and product_id is unique together and if add product more than one time just update
+            # quantity
+            CartProduct.objects.create(cart=cart, product_id=product_id,
+                                       quantity=quantity)
+        except:
+            cart_product = CartProduct.objects.get(cart=cart, product_id=product_id)
+            cart_product.quantity = quantity
+            cart_product.save()
+        cart_count = cart.products.count()
+        data = {'cart_count': cart_count}
+        return JsonResponse(data)
+    return Http404('not found')
+
+
+# Ajax View Response just json
+def delete_cart(request):
+    product_id = request.GET.get('product_id', None)
+    product = Product.view_object.get(id=product_id)
+    if product_id and product:
+        # delete from cart in database
+        try:
+            if request.user.is_authenticated:
+                cart = Cart.objects.get(user=request.user)
             else:
-                # because  cart and product_id is unique together and if add product more than one time just update
-                # quantity
-                for p in cart:
-                    if p['product_id'] == product_id:
-                        p['quantity'] = quantity
-            cart_product = {
-                'product_id': product_id,
-                'quantity': quantity
-            }
-            cart.append(cart_product)
-            request.session['cart'] = cart
-            cart_count = cart.__len__()
+                cart = Cart.objects.get(session_key=request.session.session_key)
+            cp = CartProduct.objects.get(cart=cart, product_id=product_id)
+            cp.delete()
+        except:
+            return Http404('not found')
+        cart_count = cart.products.count()
+        data = {'cart_count': cart_count}
+        return JsonResponse(data)
+    return Http404('not found')
+
+
+# Ajax View Response just json
+def update_cart(request):
+    cart_list = request.GET.get('cart_list', None)
+    if cart_list:
+        cart_list = json.dumps(cart_list)
+        cart_list = eval(json.loads(cart_list))
+
+        # update cart in database
+        if request.user.is_authenticated:
+            cart = Cart.objects.get(user=request.user)
+        else:
+            if not request.session.exists(request.session.session_key):
+                request.session.create()
+            cart = Cart.objects.get(session_key=request.session.session_key)
+        try:
+            # because  cart and product_id is unique together and if add product more than one time just update
+            # quantity
+            for c in cart_list:
+                cart_product = CartProduct.objects.get(cart=cart, product_id=c['product_id'])
+                cart_product.quantity = c['quantity']
+                cart_product.save()
+
+        except:
+            return Http404('not found')
+        cart_count = cart.products.count()
         data = {'cart_count': cart_count}
         return JsonResponse(data)
     return Http404('not found')
@@ -489,29 +530,18 @@ def add_wish(request):
         # Add to WishList in database if user is authenticated
         if request.user.is_authenticated:
             wish = WishList.objects.get_or_create(user=request.user)[0]
-            product = Product.objects.get(pk=product_id)
-            if product in wish.products.all():
-                # to add product to wish list just one time
-                massage = _('Product in wish list')
-            else:
-                wish.products.add(product)
-
-            wish_count = wish.products.count()
-        # Add to WishList in session if user is not authenticated
         else:
-            wish = request.session.get('wish', None)
-            if wish is None:
-                wish = []
-            else:
-                # to add product to wish list just one time
-                if product_id in wish:
-                    massage = _('Product in wish list')
-            wish.append(product_id)
-            request.session['wish'] = wish
-            wish_count = wish.__len__()
+            if not request.session.exists(request.session.session_key):
+                request.session.create()
+            wish = WishList.objects.get_or_create(session_key=request.session.session_key)[0]
+        if product in wish.products.all():
+            # to add product to wish list just one time
+            massage = _('Product in wish list')
+        else:
+            wish.products.add(product)
+        wish_count = wish.products.count()
         data = {'wish_count': wish_count, 'massage': massage}
         return JsonResponse(data)
-
     return Http404('not found')
 
 
@@ -528,5 +558,14 @@ class ShopView(ListView):
         if category:
             queryset = queryset.filter(categories=category)
         return queryset
+
+
+def cart_view(request):
+    if request.user.is_authenticated:
+        cart = Cart.objects.get_or_create(user=request.user)[0]
+    else:
+        cart = Cart.objects.get_or_create(session_key=request.session.session_key)[0]
+
+    return render(request, 'product/cart.html', context={'cart': cart})
 
 # End Site Views

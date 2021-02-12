@@ -69,8 +69,8 @@ def login_view(request):
 
 def home(request):
     categories = Category.objects.all()[:11]
-    products = Product.objects.filter(categories__in=categories).distinct('pk')[:12]
-    latest_products = Product.objects.all().order_by('created_at')[:18]
+    products = Product.view_object.filter(categories__in=categories).distinct('pk')[:12]
+    latest_products = Product.view_object.all().order_by('created_at')[:18]
     context = {'products': products, 'latest_products': latest_products}
     return render(request, 'index.html', context=context)
 

@@ -271,3 +271,4 @@ REST_FRAMEWORK = {
 # SWAGGER_SETTINGS = {
 #     'doc_expansion': 'full'}
 
+SESSION_ENGINE = 'accounts.session_backend'

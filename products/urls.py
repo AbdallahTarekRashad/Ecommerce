@@ -4,7 +4,7 @@ from .views import OptionUpdateView, OptionCreateView, OptionDetailView, OptionL
     ProductCreateView, ProductDetailView, ProductUpdateView, ProductListJson, ProductListView, CategoryListView, \
     CategoryDetailView, CategoryCreateView, CategoryListJson, CategoryUpdateView, ProductDeleteView, CategoryDeleteView, \
     OptionDeleteView, BrandListView, BrandListJson, BrandDetailView, BrandUpdateView, BrandCreateView, BrandDeleteView, \
-    ProductView, add_cart, add_wish, ShopView
+    ProductView, add_cart, add_wish, ShopView, cart_view, delete_cart, update_cart
 
 app_name = 'products'
 urlpatterns = [
@@ -48,9 +48,15 @@ urlpatterns = [
 
     # Ajax Add to cart
     path('ajax/add_cart/', add_cart, name='add_cart'),
+    # Ajax Delete from cart
+    path('ajax/delete_cart/', delete_cart, name='delete_cart'),
+    # Ajax update cart
+    path('ajax/update_cart/', update_cart, name='update_cart'),
     # Ajax Add to wishlist
     path('ajax/add_wish/', add_wish, name='add_wish'),
     # Shop View
-    path('shop/', ShopView.as_view(), name='shop')
+    path('shop/', ShopView.as_view(), name='shop'),
+    # Cart View
+    path('cart/', cart_view, name='cart')
     # End Site Urls
 ]

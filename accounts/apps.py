@@ -6,29 +6,45 @@ from django.contrib.auth.signals import user_logged_in
 
 
 def add_cart_wish(sender, user, request, **kwargs):
-    from products.models import Cart, WishList, CartProduct, Product
-
-    cart_session = request.session.get('cart', None)
-    wish_session = request.session.get('wish', None)
-    cart = Cart.objects.get_or_create(user=user)[0]
-    wish = WishList.objects.get_or_create(user=user)[0]
-    if cart_session:
-        for c in cart_session:
-            try:
-                # because  cart and product_id is unique together and if add product more than one time just update
-                # quantity
-                CartProduct.objects.create(cart=cart, product_id=c['product_id'],
-                                           quantity=c['quantity'])
-            except:
-                cart_product = CartProduct.objects.get(cart=cart, product_id=c['product_id'])
-                cart_product.quantity = c['quantity']
-                cart_product.save()
-    if wish_session:
-        ls = wish.products.all()
-        for w in wish_session:
-            product = Product.objects.get(pk=w)
-            if product not in ls:
-                wish.products.add(w)
+    from products.models import Cart, WishList
+    if request.session.exists(request.session.session_key):
+        cart_session = Cart.objects.filter(session_key=request.session.session_key)
+        wish_session = WishList.objects.filter(session_key=request.session.session_key)
+        cart = Cart.objects.filter(user=user)
+        wish = WishList.objects.filter(user=user)
+        if cart_session:
+            cart_session = cart_session.first()
+            if cart and cart.first().products.count() > 0:
+                cart = cart.first()
+                plist = []
+                for p in cart.products.all():
+                    plist.append(p.product)
+                for p in cart_session.products.all():
+                    if p.product not in plist:
+                        p.cart = cart
+                        p.save()
+                cart_session.delete()
+            else:
+                if cart:
+                    cart.first().delete()
+                cart_session.user = user
+                cart_session.session_key = None
+                cart_session.save()
+        if wish_session:
+            wish_session = wish_session.first()
+            if wish and wish.first().products.count() > 0:
+                wish = wish.first()
+                for p in wish_session.products.all():
+                    if p not in wish.products.all():
+                        wish.products.add(p)
+                wish.save()
+                wish_session.delete()
+            else:
+                if wish:
+                    wish.first().delete()
+                wish_session.user = user
+                wish_session.session_key = None
+                wish_session.save()
 
 
 def add_site_info(sender, **kwargs):

@@ -15,17 +15,16 @@ def basic_info(request):
         except:
             wish_count = 0
     else:
-        cart = request.session.get('cart', None)
-        if cart:
-            cart_count = len(cart)
-        else:
+        if not request.session.exists(request.session.session_key):
+            request.session.create()
+        try:
+            cart_count = CartProduct.objects.filter(cart__session_key=request.session.session_key).count()
+        except:
             cart_count = 0
-        wish = request.session.get('wish', None)
-        if wish:
-            wish_count = len(wish)
-        else:
+        try:
+            wish_count = WishList.objects.get(session_key=request.session.session_key).products.count()
+        except:
             wish_count = 0
-
     return {'site_info': site_info,
             'categories': categories,
             'cart_count': cart_count,
