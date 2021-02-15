@@ -30,7 +30,7 @@
                             <span>(18 reviews)</span>
 
                         </div>
-                        <div class="product__details__price">{{ product.price }}</div>
+                        <div class="product__details__price">{{ product.price }} EGP</div>
                         <p>{{ product.description }} </p>
                         <div class="product__details__quantity">
                             <div class="quantity">
@@ -135,7 +135,7 @@
                                 <h6>
                                     <a href="{% url 'products:product' p.pk %}">{% lang product.name product.name_ar %}</a>
                                 </h6>
-                                <h5>{{ product.price }}</h5>
+                                <h5>{{ product.price }} EGP</h5>
                             </div>
                         </div>
                     </div>

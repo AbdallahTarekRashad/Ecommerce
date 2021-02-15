@@ -29,7 +29,7 @@
                             <thead>
                             <tr>
                                 <th class="shoping__product">Products</th>
-                                <th>Price</th>
+                                <th colspan="2">Price</th>
                                 <th>Quantity</th>
                                 <th>Total</th>
                                 <th></th>
@@ -46,6 +46,7 @@
                                         <td class="shoping__cart__price">
                                             {{ p.product.price }}
                                         </td>
+                                        <td>EGP</td>
                                         <td class="shoping__cart__quantity">
                                             <div class="quantity">
                                                 <div class="pro-qty">
@@ -54,7 +55,7 @@
                                             </div>
                                         </td>
                                         <td class="shoping__cart__total">
-                                            {% widthratio p.quantity 1 p.product.price %}
+                                            {% widthratio p.quantity 1 p.product.price %} EGP
                                         </td>
                                         <td class="shoping__cart__item__close">
                                             <span product_id="{{ p.product.id }}" onclick="del_cart(this)"

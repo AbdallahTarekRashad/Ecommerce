@@ -20,7 +20,7 @@
 
     function add_cart(btn, quantity = false) {
         let product_id = btn.getAttribute('product_id');
-        let q = 1
+        let q = 'plus'
         if (quantity) {
             q = quantity.value;
         }
@@ -70,8 +70,6 @@
             };
             data.push(temp);
         });
-
-        {#console.log(data)#}
         $.ajax({
             url: '{% url 'products:update_cart' %}',
             dataType: 'json',
@@ -108,5 +106,21 @@
         });
     }
 
+    function delete_wish(btn) {
+        let product_id = btn.getAttribute('product_id');
+        $.ajax({
+            url: '{% url 'products:delete_wish' %}',
+            data: {'product_id': product_id,},
+            success: function (data, status, xhr) {
+                document.getElementById('wish_count').innerText = data.wish_count
+                var $b = btn.closest(".delete-class");
+                $b.remove();
+                Toast.fire({
+                    icon: 'success',
+                    text: '{% trans 'Wish List Updated' %}'
+                })
+            }
+        });
+    }
 
 </script>

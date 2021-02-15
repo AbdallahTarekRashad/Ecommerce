@@ -11,7 +11,25 @@
                             <h4>Department</h4>
                             <ul>
                                 {% for c in categories %}
-                                    <li><a href="{% url 'products:shop' %}{% urlparams category=c.pk %}">{% lang c.name c.name_ar %}</a></li>
+                                    <li><a href="
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                            {% url 'products:shop' %}{% urlparams category=c.pk %}">{% lang c.name c.name_ar %}</a>
+                                    </li>
                                 {% endfor %}
                             </ul>
                         </div>
@@ -19,99 +37,108 @@
                             <h4>Price</h4>
                             <div class="price-range-wrap">
                                 <div class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
-                                     data-min="10" data-max="540">
+                                     data-min="10" data-max="50000" data-dmin="{{ request.GET.min }}" data-dmax="{{ request.GET.max }}">
                                     <div class="ui-slider-range ui-corner-all ui-widget-header"></div>
-                                    <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
-                                    <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                                    <span tabindex="0" class="ui-slider-handle ui-corner-all "></span>
+                                    <span tabindex="0" class="ui-slider-handle ui-corner-all "></span>
                                 </div>
                                 <div class="range-slider">
                                     <div class="price-input">
-                                        <input type="text" id="minamount">
-                                        <input type="text" id="maxamount">
+                                        <form method="get">
+                                            {% price_search %}
+                                            <div><input name="min" type="text" id="minamount"><span>EGP</span>
+                                            </div>
+                                            <div>
+                                                <input name="max" type="text" id="maxamount"><span>EGP</span>
+                                            </div>
+                                            <button onclick="" style="float: right;padding:7px 7px 7px;font-size:13px "
+                                                    class="site-btn">Search
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="sidebar__item sidebar__item__color--option">
-                            <h4>Colors</h4>
-                            <div class="sidebar__item__color sidebar__item__color--white">
-                                <label for="white">
-                                    White
-                                    <input type="radio" id="white">
-                                </label>
-                            </div>
-                            <div class="sidebar__item__color sidebar__item__color--gray">
-                                <label for="gray">
-                                    Gray
-                                    <input type="radio" id="gray">
-                                </label>
-                            </div>
-                            <div class="sidebar__item__color sidebar__item__color--red">
-                                <label for="red">
-                                    Red
-                                    <input type="radio" id="red">
-                                </label>
-                            </div>
-                            <div class="sidebar__item__color sidebar__item__color--black">
-                                <label for="black">
-                                    Black
-                                    <input type="radio" id="black">
-                                </label>
-                            </div>
-                            <div class="sidebar__item__color sidebar__item__color--blue">
-                                <label for="blue">
-                                    Blue
-                                    <input type="radio" id="blue">
-                                </label>
-                            </div>
-                            <div class="sidebar__item__color sidebar__item__color--green">
-                                <label for="green">
-                                    Green
-                                    <input type="radio" id="green">
-                                </label>
-                            </div>
-                        </div>
-                        <div class="sidebar__item">
-                            <h4>Popular Size</h4>
-                            <div class="sidebar__item__size">
-                                <label for="large">
-                                    Large
-                                    <input type="radio" id="large">
-                                </label>
-                            </div>
-                            <div class="sidebar__item__size">
-                                <label for="medium">
-                                    Medium
-                                    <input type="radio" id="medium">
-                                </label>
-                            </div>
-                            <div class="sidebar__item__size">
-                                <label for="small">
-                                    Small
-                                    <input type="radio" id="small">
-                                </label>
-                            </div>
-                            <div class="sidebar__item__size">
-                                <label for="tiny">
-                                    Tiny
-                                    <input type="radio" id="tiny">
-                                </label>
-                            </div>
-                        </div>
+{#                        <div class="sidebar__item sidebar__item__color--option">#}
+{#                            <h4>Colors</h4>#}
+{#                            <div class="sidebar__item__color sidebar__item__color--white">#}
+{#                                <label for="white">#}
+{#                                    White#}
+{#                                    <input type="radio" id="white">#}
+{#                                </label>#}
+{#                            </div>#}
+{#                            <div class="sidebar__item__color sidebar__item__color--gray">#}
+{#                                <label for="gray">#}
+{#                                    Gray#}
+{#                                    <input type="radio" id="gray">#}
+{#                                </label>#}
+{#                            </div>#}
+{#                            <div class="sidebar__item__color sidebar__item__color--red">#}
+{#                                <label for="red">#}
+{#                                    Red#}
+{#                                    <input type="radio" id="red">#}
+{#                                </label>#}
+{#                            </div>#}
+{#                            <div class="sidebar__item__color sidebar__item__color--black">#}
+{#                                <label for="black">#}
+{#                                    Black#}
+{#                                    <input type="radio" id="black">#}
+{#                                </label>#}
+{#                            </div>#}
+{#                            <div class="sidebar__item__color sidebar__item__color--blue">#}
+{#                                <label for="blue">#}
+{#                                    Blue#}
+{#                                    <input type="radio" id="blue">#}
+{#                                </label>#}
+{#                            </div>#}
+{#                            <div class="sidebar__item__color sidebar__item__color--green">#}
+{#                                <label for="green">#}
+{#                                    Green#}
+{#                                    <input type="radio" id="green">#}
+{#                                </label>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="sidebar__item">#}
+{#                            <h4>Popular Size</h4>#}
+{#                            <div class="sidebar__item__size">#}
+{#                                <label for="large">#}
+{#                                    Large#}
+{#                                    <input type="radio" id="large">#}
+{#                                </label>#}
+{#                            </div>#}
+{#                            <div class="sidebar__item__size">#}
+{#                                <label for="medium">#}
+{#                                    Medium#}
+{#                                    <input type="radio" id="medium">#}
+{#                                </label>#}
+{#                            </div>#}
+{#                            <div class="sidebar__item__size">#}
+{#                                <label for="small">#}
+{#                                    Small#}
+{#                                    <input type="radio" id="small">#}
+{#                                </label>#}
+{#                            </div>#}
+{#                            <div class="sidebar__item__size">#}
+{#                                <label for="tiny">#}
+{#                                    Tiny#}
+{#                                    <input type="radio" id="tiny">#}
+{#                                </label>#}
+{#                            </div>#}
+{#                        </div>#}
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-7">
                     <div class="filter__item">
                         <div class="row">
-                            <div class="col-lg-4 col-md-5">
-                                <div class="filter__sort">
-                                    <span>Sort By</span>
-                                    <select>
-                                        <option value="0">Default</option>
-                                        <option value="0">Default</option>
-                                    </select>
-                                </div>
-                            </div>
+{#                            <div class="col-lg-4 col-md-5">#}
+{#                                <div class="filter__sort">#}
+{#                                    <span>Sort By</span>#}
+{#                                    <select>#}
+{#                                        <option value="0">Default</option>#}
+{#                                        <option value="0">Default</option>#}
+{#                                    </select>#}
+{#                                </div>#}
+{#                            </div>#}
                             <div class="col-lg-4 col-md-4">
 
                             </div>
@@ -139,7 +166,7 @@
                                         <h6>
                                             <a href="{% url 'products:product' product.pk %}">{% lang product.name product.name_ar %}</a>
                                         </h6>
-                                        <h5>{{ product.price }}</h5>
+                                        <h5>{{ product.price }} EGP</h5>
                                     </div>
                                 </div>
                             </div>
@@ -148,18 +175,34 @@
                     </div>
                     <div class="product__pagination">
                         {% if page_obj.has_previous %}
-                            <a href="?page=1">&laquo; </a>
-                            <a href="?page={{ page_obj.previous_page_number }}"><i
+                            <a href="{% page 1 %}">&laquo; </a>
+                            <a href="{% page page_obj.previous_page_number %}"><i
                                     class="fa fa-long-arrow-left"></i></a>
                         {% endif %}
-
-                        <span class="current">
-                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                        </span>
-
+                        {% if page_obj.number > 2 %}
+                            {% minus page_obj.number 1 as page_1 %}
+                            {% minus page_obj.number 2 as page_2 %}
+                            <a href="{% page page_2 %}">{{ page_2 }}</a>
+                            <a href="{% page page_1 %}">{{ page_1 }}</a>
+                        {% elif page_obj.number > 1 %}
+                            {% minus page_obj.number 1 as page_1 %}
+                            <a href="{% page page_1 %}">{{ page_1 }}</a>
+                        {% endif %}
+                        <a class="active">{{ page_obj.number }}</a>
+                        {% minus page_obj.paginator.num_pages page_obj.number as num %}
+                        {% if num >= 2 %}
+                            {% plus page_obj.number 1 as page1 %}
+                            {% plus page_obj.number 2 as page2 %}
+                            <a href="{% page page1 %}">{{ page1 }}</a>
+                            <a href="{% page page2 %}">{{ page2 }}</a>
+                        {% elif num >= 1 %}
+                            {% plus page_obj.number 1 as page1 %}
+                            <a href="{% page page1 %}">{{ page1 }}</a>
+                        {% endif %}
                         {% if page_obj.has_next %}
-                            <a href="?page={{ page_obj.next_page_number }}"><i class="fa fa-long-arrow-right"></i></a>
-                            <a href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+                            <a href="{% page page_obj.next_page_number %}"><i
+                                    class="fa fa-long-arrow-right"></i></a>
+                            <a href="{% page page_obj.paginator.num_pages %}">&raquo;</a>
                         {% endif %}
                     </div>
                 </div>

@@ -57,7 +57,7 @@ class UserChangeForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('email', 'birth_date', 'first_name', 'last_name', 'image', 'billing_address',
-                  'default_shipping_address', 'country', 'phone', 'gender', 'username', 'user_permissions',)
+                  'default_shipping_address', 'country', 'phone', 'gender', 'username', 'user_permissions')
 
 
 class UserAdminChangeForm(UserChangeForm):

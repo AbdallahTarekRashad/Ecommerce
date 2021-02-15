@@ -41,7 +41,7 @@
     <nav class="humberger__menu__nav mobile-menu">
         <ul>
             <li class="active"><a href="{% url 'accounts:home' %}">Home</a></li>
-            <li><a href="#">Shop</a></li>
+            <li><a href="{% url 'products:shop' %}">Shop</a></li>
             <li><a href="#">Contact</a></li>
         </ul>
     </nav>
@@ -120,7 +120,7 @@
                 <nav class="header__menu">
                     <ul>
                         <li class="active"><a href="{% url 'accounts:home' %}">Home</a></li>
-                        <li><a href="#">Shop</a></li>
+                        <li><a href="{% url 'products:shop' %}">Shop</a></li>
                         <li><a href="#">Contact</a></li>
                     </ul>
                 </nav>
@@ -128,7 +128,7 @@
             <div class="col-lg-3">
                 <div class="header__cart">
                     <ul>
-                        <li><a href="#"><i class="fa fa-heart"></i> <span id="wish_count">{{ wish_count }}</span></a></li>
+                        <li><a href="{% url 'products:profile' %}"><i class="fa fa-heart"></i> <span id="wish_count">{{ wish_count }}</span></a></li>
                         <li><a href="{% url 'products:cart' %}"><i class="fa fa-shopping-bag"></i> <span id="cart_count" >{{ cart_count }}</span></a></li>
                     </ul>
                     <div class="header__cart__price">item: <span>$150.00</span></div>
@@ -162,8 +162,9 @@
             <div class="col-lg-9">
                 <div class="hero__search">
                     <div class="hero__search__form">
-                        <form action="#">
-                            <input type="text" placeholder="{% trans 'What do yo u need?' %}">
+                        <form action="{% url 'products:shop' %}">
+                            {% search %}
+                            <input name="search" type="text" placeholder="{% trans 'What do yo u need?' %}">
                             <button type="submit" class="site-btn">{% trans 'SEARCH' %}</button>
                         </form>
                     </div>

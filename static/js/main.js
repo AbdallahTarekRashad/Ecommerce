@@ -60,21 +60,21 @@
         allowParentLinks: true
     });
 
-    $(function() {
-		$("#add-order").on("click",function() {
-		  var modal = document.getElementById("myModal");
-		  var span = document.getElementsByClassName("close1")[0];
-	
-			modal.style.display = "block";
-	  
-			span.onclick = function() {
-			  modal.style.display = "none";
-			 }
-	 // please select - possibly you want something else here
-	
-		  
-	  });
-	});
+    $(function () {
+        $("#add-order").on("click", function () {
+            var modal = document.getElementById("myModal");
+            var span = document.getElementsByClassName("close1")[0];
+
+            modal.style.display = "block";
+
+            span.onclick = function () {
+                modal.style.display = "none";
+            }
+            // please select - possibly you want something else here
+
+
+        });
+    });
 
     /*-----------------------
         Categories Slider
@@ -112,20 +112,20 @@
     });
 
 
-    $('.hero__categories__all').on('click', function(){
+    $('.hero__categories__all').on('click', function () {
         $('.hero__categories ul').slideToggle(400);
     });
 
-     /*-----------------------
-        Categories Slider
-    ------------------------*/
+    /*-----------------------
+       Categories Slider
+   ------------------------*/
     $(".home-slider").owlCarousel({
         loop: true,
         margin: 0,
         items: 1,
         dots: false,
         nav: false,
-       
+
         navText: ["<span class='fa fa-angle-left'><span/>", "<span class='fa fa-angle-right'><span/>"],
         animateOut: 'fadeOut',
         animateIn: 'fadeIn',
@@ -141,7 +141,6 @@
 
         }
     });
-
 
 
     /*--------------------------
@@ -210,19 +209,29 @@
         minamount = $("#minamount"),
         maxamount = $("#maxamount"),
         minPrice = rangeSlider.data('min'),
-        maxPrice = rangeSlider.data('max');
+        maxPrice = rangeSlider.data('max'),
+        defaultMin = rangeSlider.data('dmin'),
+        defaultMax = rangeSlider.data('dmax');
+    if(!defaultMax || !defaultMin){
+        defaultMin = minPrice
+        defaultMax = maxPrice
+    }
     rangeSlider.slider({
         range: true,
         min: minPrice,
         max: maxPrice,
-        values: [minPrice, maxPrice],
+        values: [defaultMin, defaultMax],
         slide: function (event, ui) {
-            minamount.val('$' + ui.values[0]);
-            maxamount.val('$' + ui.values[1]);
-        }
+            minamount.val(ui.values[0]);
+            maxamount.val(ui.values[1]);
+        },
+        create: function(event, ui){
+            minamount.val(defaultMin);
+            maxamount.val(defaultMax);
+    }
     });
-    minamount.val('$' + rangeSlider.slider("values", 0));
-    maxamount.val('$' + rangeSlider.slider("values", 1));
+    // minamount.val(defaultMin);
+    // maxamount.val(defaultMax);
 
     /*--------------------------
         Select

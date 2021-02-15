@@ -8,6 +8,8 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import (TemplateView, DetailView, CreateView, UpdateView, DeleteView, ListView)
 from django_datatables_view.base_datatable_view import BaseDatatableView
+
+from accounts.forms import UserChangeForm
 from .models import Option, Product, Category, ProductImages, Brand, Cart, CartProduct, WishList
 from django.contrib.auth.decorators import permission_required
 from django.utils.decorators import method_decorator
@@ -458,11 +460,18 @@ def add_cart(request):
         try:
             # because  cart and product_id is unique together and if add product more than one time just update
             # quantity
-            CartProduct.objects.create(cart=cart, product_id=product_id,
-                                       quantity=quantity)
+            if quantity == 'plus':
+                CartProduct.objects.create(cart=cart, product_id=product_id,
+                                           quantity=1)
+            else:
+                CartProduct.objects.create(cart=cart, product_id=product_id,
+                                           quantity=quantity)
         except:
             cart_product = CartProduct.objects.get(cart=cart, product_id=product_id)
-            cart_product.quantity = quantity
+            if quantity == 'plus':
+                cart_product.quantity = cart_product.quantity + 1
+            else:
+                cart_product.quantity = quantity
             cart_product.save()
         cart_count = cart.products.count()
         data = {'cart_count': cart_count}
@@ -545,6 +554,28 @@ def add_wish(request):
     return Http404('not found')
 
 
+# Ajax View Response just json
+def delete_wish(request):
+    product_id = request.GET.get('product_id', None)
+    product = Product.view_object.get(id=product_id)
+    if product_id and product:
+        massage = False
+        # Add to WishList in database if user is authenticated
+        if request.user.is_authenticated:
+            wish = WishList.objects.get_or_create(user=request.user)[0]
+        else:
+            if not request.session.exists(request.session.session_key):
+                request.session.create()
+            wish = WishList.objects.get_or_create(session_key=request.session.session_key)[0]
+        if product in wish.products.all():
+            # to add product to wish list just one time
+            wish.products.remove(product)
+        wish_count = wish.products.count()
+        data = {'wish_count': wish_count, 'massage': massage}
+        return JsonResponse(data)
+    return Http404('not found')
+
+
 class ShopView(ListView):
     model = Product
     template_name = 'product/shop.html'
@@ -555,8 +586,28 @@ class ShopView(ListView):
     def get_queryset(self):
         queryset = super(ShopView, self).get_queryset()
         category = self.request.GET.get('category', None)
+        search = self.request.GET.get('search', None)
+        min = self.request.GET.get('min', None)
+        max = self.request.GET.get('max', None)
+
         if category:
             queryset = queryset.filter(categories=category)
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search) |
+                Q(name_ar__icontains=search) |
+                Q(description__icontains=search) |
+                Q(description_ar__icontains=search) |
+                Q(sku__icontains=search) |
+                Q(weight__icontains=search) |
+                Q(brand__name__icontains=search) |
+                Q(brand__name_ar__icontains=search)
+            )
+
+        if min and max:
+            print("++++++++++++++++++")
+            queryset = queryset.filter(Q(price__gte=min) & Q(price__lt=max))
+
         return queryset
 
 
@@ -567,5 +618,35 @@ def cart_view(request):
         cart = Cart.objects.get_or_create(session_key=request.session.session_key)[0]
 
     return render(request, 'product/cart.html', context={'cart': cart})
+
+
+class Profile(TemplateView):
+    template_name = 'product/profile.html'
+
+    def post(self, request):
+        if self.request.POST:
+            form = UserChangeForm(data=self.request.POST, instance=self.request.user)
+            if form.is_valid():
+                form.save()
+            else:
+                self.form = form
+
+        return self.get(request)
+
+    def get_context_data(self, **kwargs):
+        context = super(Profile, self).get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            wish = WishList.objects.get_or_create(user=self.request.user)[0]
+            user = self.request.user.__class__.objects.filter(pk=self.request.user.id).values().first()
+            user['country'] = user['country_id']
+            if hasattr(self, 'form'):
+                context['form'] = self.form
+            else:
+                context['form'] = UserChangeForm(initial=user)
+
+        else:
+            wish = WishList.objects.get_or_create(session_key=self.request.session.session_key)[0]
+        context['wish'] = wish
+        return context
 
 # End Site Views

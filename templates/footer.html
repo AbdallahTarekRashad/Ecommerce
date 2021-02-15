@@ -20,7 +20,7 @@
                         <a href="{% url 'accounts:home' %}"><img src="{{ site_info.logo.url }}" alt=""></a>
                     </div>
                     <ul>
-                        <li>{% trans 'Address' %}: {{ site_info.address }}</li>
+                        <li>{% trans 'Address' %}: {% lang site_info.address site_info.address_ar %}</li>
                         <li>{% trans 'Phone' %}: {{ site_info.phone }}</li>
                         <li>{% trans 'Email' %}: {{ site_info.email }}</li>
                     </ul>
@@ -31,7 +31,7 @@
                     <h6>Useful Links</h6>
                     <ul>
                         <li><a href="{% url 'accounts:home' %}">{% trans 'Home' %}</a></li>
-                        <li><a href="#">Shop</a></li>
+                        <li><a href="{% url 'products:shop' %}">Shop</a></li>
                         <li><a href="#">Contact Us</a></li>
                     </ul>
                 </div>
@@ -42,7 +42,7 @@
 
                     <ul>
 
-                        <li><a href="#">Profile</a></li>
+                        <li><a href="{% url 'products:profile' %}">Profile</a></li>
                         <li><a href="#">Track Your Order</a></li>
                     </ul>
                     <div class="footer__widget__social">

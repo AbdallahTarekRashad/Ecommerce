@@ -25,9 +25,10 @@ urlpatterns = [
     path('api/doc/swagger/',
          user_passes_test(lambda u: u.is_superuser, )(schema_view.with_ui('swagger', cache_timeout=0)),
          name='api_swagger'),
-    path('api/doc/redoc/', user_passes_test(lambda u: u.is_superuser, )(schema_view.with_ui('redoc', cache_timeout=0)),
+    # path('api/doc/redoc/', user_passes_test(lambda u: u.is_superuser, )(schema_view.with_ui('redoc', cache_timeout=0)),
+    #      name='api_redoc'),
+    path('api/doc/redoc/', schema_view.with_ui('redoc', cache_timeout=0),
          name='api_redoc'),
-
     # re_path(r'^api/doc/schema(?P<format>\.json|\.yaml)$',
     #         user_passes_test(lambda u: u.is_superuser, )(schema_view.without_ui(cache_timeout=0)),
     #         name='api_json_yaml'),
