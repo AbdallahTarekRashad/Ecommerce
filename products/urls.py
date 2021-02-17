@@ -4,7 +4,7 @@ from .views import OptionUpdateView, OptionCreateView, OptionDetailView, OptionL
     ProductCreateView, ProductDetailView, ProductUpdateView, ProductListJson, ProductListView, CategoryListView, \
     CategoryDetailView, CategoryCreateView, CategoryListJson, CategoryUpdateView, ProductDeleteView, CategoryDeleteView, \
     OptionDeleteView, BrandListView, BrandListJson, BrandDetailView, BrandUpdateView, BrandCreateView, BrandDeleteView, \
-    ProductView, add_cart, add_wish, ShopView, cart_view, delete_cart, update_cart, Profile, delete_wish
+    ProductView, add_wish, ShopView, cart_view, delete_cart, Profile, delete_wish, cart
 
 app_name = 'products'
 urlpatterns = [
@@ -41,17 +41,14 @@ urlpatterns = [
     path('seller/product/delete/<int:pk>', ProductDeleteView.as_view(), name='product_delete'),
 
     # Product Api
-    path('', include('products.api.urls', namespace='products_api')),
+    path('api/', include('products.api.urls', namespace='products_api')),
 
     # Site Urls
     path('product/<int:pk>/', ProductView.as_view(), name='product'),
-
-    # Ajax Add to cart
-    path('ajax/add_cart/', add_cart, name='add_cart'),
     # Ajax Delete from cart
     path('ajax/delete_cart/', delete_cart, name='delete_cart'),
-    # Ajax Update cart
-    path('ajax/update_cart/', update_cart, name='update_cart'),
+    # Ajax Update and Add cart
+    path('ajax/cart/', cart, name='cart_add_update'),
     # Ajax Add to wishlist
     path('ajax/add_wish/', add_wish, name='add_wish'),
     # Ajax Delete from wishlist

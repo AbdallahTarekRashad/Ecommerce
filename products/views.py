@@ -10,7 +10,7 @@ from django.views.generic import (TemplateView, DetailView, CreateView, UpdateVi
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from accounts.forms import UserChangeForm
-from .models import Option, Product, Category, ProductImages, Brand, Cart, CartProduct, WishList
+from .models import Option, Product, Category, ProductImages, Brand, Cart, CartProduct, WishList, ProductReview
 from django.contrib.auth.decorators import permission_required
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -441,6 +441,16 @@ class ProductView(DetailView):
         context.update({'relate_products': relate_products})
         return context
 
+    def post(self, request, pk):
+        if request.user.is_authenticated:
+            user = request.user
+            rate = request.POST.get('rate', None)
+            comment = request.POST.get('comment', None)
+            if user and rate and comment:
+                ProductReview.objects.create(user=user, rate=rate, comment=comment, product_id=pk)
+                return redirect('products:product', pk=pk)
+        return Http404
+
 
 # Ajax View Response just json
 def add_cart(request):
@@ -501,7 +511,8 @@ def delete_cart(request):
 
 
 # Ajax View Response just json
-def update_cart(request):
+# Just one view for add or update on or more cart product
+def cart(request):
     cart_list = request.GET.get('cart_list', None)
     if cart_list:
         cart_list = json.dumps(cart_list)
@@ -514,16 +525,26 @@ def update_cart(request):
             if not request.session.exists(request.session.session_key):
                 request.session.create()
             cart = Cart.objects.get(session_key=request.session.session_key)
-        try:
-            # because  cart and product_id is unique together and if add product more than one time just update
-            # quantity
-            for c in cart_list:
-                cart_product = CartProduct.objects.get(cart=cart, product_id=c['product_id'])
-                cart_product.quantity = c['quantity']
-                cart_product.save()
 
-        except:
-            return Http404('not found')
+        # because  cart and product_id is unique together and if add product more than one time just update
+        # quantity
+        for c in cart_list:
+            # try:
+            cart_product, flag = CartProduct.objects.get_or_create(cart=cart, product_id=c['product_id'])
+            if c.get('quantity', None):
+                if c['quantity'] == 'plus':
+                    if not flag:
+                        cart_product.quantity = cart_product.quantity + 1
+                    else:
+                        cart_product.quantity = 1
+                else:
+                    cart_product.quantity = c['quantity']
+            else:
+                cart_product.quantity = 1
+            cart_product.save()
+            # except:
+            #     pass
+
         cart_count = cart.products.count()
         data = {'cart_count': cart_count}
         return JsonResponse(data)
@@ -568,7 +589,7 @@ def delete_wish(request):
                 request.session.create()
             wish = WishList.objects.get_or_create(session_key=request.session.session_key)[0]
         if product in wish.products.all():
-            # to add product to wish list just one time
+            # remove product from wish list just one time
             wish.products.remove(product)
         wish_count = wish.products.count()
         data = {'wish_count': wish_count, 'massage': massage}
@@ -605,7 +626,6 @@ class ShopView(ListView):
             )
 
         if min and max:
-            print("++++++++++++++++++")
             queryset = queryset.filter(Q(price__gte=min) & Q(price__lt=max))
 
         return queryset

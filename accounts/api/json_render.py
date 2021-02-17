@@ -8,7 +8,6 @@ class JsonRendererNew(renderers.BaseRenderer):
     format = 'json'
 
     def render(self, data, media_type='application/json', renderer_context=None, message=None):
-        # print(renderer_context)
         stat = [200, 201, 202, 203, 204]
         response_dict = {
             'status': 1 if renderer_context['response'].status_code in stat else 0,

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load extra_tags %}
+{% load extra_tags i18n %}
 {% block body %}
     <!-- Product Details Section Begin -->
     <section class="product-details spad">
@@ -22,12 +22,9 @@
                     <div class="product__details__text">
                         <h3>{% lang product.name product.name_ar %}</h3>
                         <div class="product__details__rating">
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star-half-o"></i>
-                            <span>(18 reviews)</span>
+                            {% rate product.rate as r %}
+                            {{ r|safe }}
+                            <span>({{ product.rate_count }} reviews)</span>
 
                         </div>
                         <div class="product__details__price">{{ product.price }} EGP</div>
@@ -41,7 +38,8 @@
                         </div>
                         <a product_id="{{ product.pk }}" onclick="add_cart(this,document.getElementById('quantity'))"
                            class="primary-btn">ADD TO CARD</a>
-                        <a product_id="{{ product.pk }}" onclick="add_wish(this)" class="heart-icon"><span class="icon_heart_alt"></span></a>
+                        <a product_id="{{ product.pk }}" onclick="add_wish(this)" class="heart-icon"><span
+                                class="icon_heart_alt"></span></a>
                         <ul>
                             <li><b>Availability</b> <span>{% if product.stock > 0 %}In Stock{% else %}Out Of
                                 Stock{% endif %} </span></li>
@@ -68,7 +66,7 @@
 
                             <li class="nav-item">
                                 <a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab"
-                                   aria-selected="false">Reviews <span>(1)</span></a>
+                                   aria-selected="false">Reviews <span>({{ product.rate_count }})</span></a>
                             </li>
                         </ul>
                         <div class="tab-content">
@@ -80,23 +78,50 @@
                             </div>
                             <div class="tab-pane" id="tabs-2" role="tabpanel">
                                 <div class="product__details__tab__desc">
-                                    <h6>Products Infomation</h6>
-                                    <p>Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.
-                                        Pellentesque in ipsum id orci porta dapibus. Proin eget tortor risus.
-                                        Vivamus suscipit tortor eget felis porttitor volutpat. Vestibulum ac diam
-                                        sit amet quam vehicula elementum sed sit amet dui. Donec rutrum congue leo
-                                        eget malesuada. Vivamus suscipit tortor eget felis porttitor volutpat.
-                                        Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Praesent
-                                        sapien massa, convallis a pellentesque nec, egestas non nisi. Vestibulum ac
-                                        diam sit amet quam vehicula elementum sed sit amet dui. Vestibulum ante
-                                        ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;
-                                        Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula.
-                                        Proin eget tortor risus.</p>
-                                    <p>Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Lorem
-                                        ipsum dolor sit amet, consectetur adipiscing elit. Mauris blandit aliquet
-                                        elit, eget tincidunt nibh pulvinar a. Cras ultricies ligula sed magna dictum
-                                        porta. Cras ultricies ligula sed magna dictum porta. Sed porttitor lectus
-                                        nibh. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a.</p>
+                                    {% for review in product.reviews.all|slice:':5' %}
+                                        <div class="row">
+
+                                            <img class="img-review" src="{{ review.user.image.url }}">
+                                            <div class="head">
+                                                <h6 style="margin-bottom: -5px; ">{{ review.user }}</h6>
+                                                <p style="font-size: 12px;">{{ review.created_at }}</p>
+
+                                            </div>
+                                            <div style="right: 0px;position: absolute;color: #EDBB0E;" class="head">
+                                                {% rate review.rate as r %}
+                                                {{ r|safe }}
+                                            </div>
+
+                                            <p class="par">{{ review.comment }}</p>
+
+                                        </div>
+                                    {% endfor %}
+                                    {% if user.is_authenticated %}
+                                        <div class="comment row">
+                                            <img class="img-review" src="{{ user.image.url }}">
+                                            <div class="hero__search__form form-div">
+                                                <form method="post">
+                                                    {% csrf_token %}
+                                                    <input class="comment-input" name="comment" type="text"
+                                                           placeholder="{% trans 'Comment' %}">
+                                                    <div class="rate">
+                                                        <input type="radio" id="star5" name="rate" value="5"/>
+                                                        <label for="star5" title="text">5 stars</label>
+                                                        <input type="radio" id="star4" name="rate" value="4"/>
+                                                        <label for="star4" title="text">4 stars</label>
+                                                        <input type="radio" id="star3" name="rate" value="3"/>
+                                                        <label for="star3" title="text">3 stars</label>
+                                                        <input type="radio" id="star2" name="rate" value="2"/>
+                                                        <label for="star2" title="text">2 stars</label>
+                                                        <input type="radio" id="star1" name="rate" value="1"/>
+                                                        <label for="star1" title="text">1 star</label>
+                                                    </div>
+                                                    <button style="padding: 9px 30px 30px;;height: 37px;" type="submit"
+                                                            class="site-btn">{% trans 'COMMENT' %}</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -126,9 +151,11 @@
                                     <img src="{{ p.main_image.url }}"/>
                                 </div>
                                 <ul class="product__item__pic__hover">
-                                    <li><a product_id="{{ product.pk }}" onclick="add_wish(this)"><i class="fa fa-heart"></i></a></li>
+                                    <li><a product_id="{{ product.pk }}" onclick="add_wish(this)"><i
+                                            class="fa fa-heart"></i></a></li>
 
-                                    <li><a product_id="{{ product.pk }}" onclick="add_cart(this)"><i class="fa fa-shopping-cart"></i></a></li>
+                                    <li><a product_id="{{ product.pk }}" onclick="add_cart(this)"><i
+                                            class="fa fa-shopping-cart"></i></a></li>
                                 </ul>
                             </div>
                             <div class="product__item__text">

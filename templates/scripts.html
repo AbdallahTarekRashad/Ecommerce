@@ -24,13 +24,14 @@
         if (quantity) {
             q = quantity.value;
         }
+        let data = [{
+            'product_id': product_id,
+            'quantity': q
+        }]
         $.ajax({
-            url: '{% url 'products:add_cart' %}',
-            data:
-                {
-                    'product_id': product_id,
-                    'quantity': q
-                },
+            url: '{% url 'products:cart_add_update' %}',
+            data: {'cart_list': JSON.stringify(data)}
+            ,
             success: function (data, status, xhr) {
                 document.getElementById('cart_count').innerText = data.cart_count
                 Toast.fire({
@@ -71,7 +72,7 @@
             data.push(temp);
         });
         $.ajax({
-            url: '{% url 'products:update_cart' %}',
+            url: '{% url 'products:cart_add_update' %}',
             dataType: 'json',
             data: {'cart_list': JSON.stringify(data)},
             success: function (data, status, xhr) {

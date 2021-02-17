@@ -100,3 +100,21 @@ def search(context):
     for key in dic:
         form_hidden += '<input type="hidden" name="' + key + '" value="' + dic[key] + '">'
     return mark_safe(form_hidden)
+
+
+@register.simple_tag
+def rate(num):
+    star = '<i class="fa fa-star"></i>'
+    half_star = '<i class="fa fa-star-half-o"></i>'
+    empty_star = '<i class="fa fa-star-o"></i>'
+    result = ''
+    for i in range(int(num)):
+        result += star
+    if num - int(num) > 0.5:
+        result += half_star
+        emp = 5 - int(num) - 1
+    else:
+        emp = 5 - int(num)
+    for e in range(emp):
+        result += empty_star
+    return result

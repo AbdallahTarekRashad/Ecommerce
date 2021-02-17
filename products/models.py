@@ -78,6 +78,8 @@ class Product(BaseModel):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, blank=True, null=True, related_name='products',
                               verbose_name=_('brand'))
     show = models.BooleanField(default=True, verbose_name=_('show'))
+    rate = models.FloatField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)])
+    rate_count = models.PositiveIntegerField(default=0)
     objects = models.Manager()
     view_object = ViewManager()  # for Site Views
 
@@ -109,6 +111,18 @@ class ProductReview(BaseModel):
     rate = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(5.0)], verbose_name='rate')
     comment = models.CharField(max_length=200, verbose_name='comment')
 
+    class Meta:
+        verbose_name = _('Review')
+        verbose_name_plural = _('Reviews')
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self._state.adding is True:
+            self.product.rate_count += 1
+            self.product.rate = self.product.rate + (int(self.rate) - self.product.rate) / self.product.rate_count
+            self.product.save()
+        super(ProductReview, self).save(force_insert, force_update, using, update_fields)
+
 
 class Cart(BaseModel):
     user = models.OneToOneField(User, blank=True, null=True, on_delete=models.CASCADE, related_name='cart')
@@ -117,7 +131,7 @@ class Cart(BaseModel):
 
 class CartProduct(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='cart_product')
-    quantity = models.IntegerField(verbose_name=_('quantity'), default=1)
+    quantity = models.PositiveIntegerField(verbose_name=_('quantity'), default=1)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='products')
 
     class Meta:
@@ -128,4 +142,3 @@ class WishList(BaseModel):
     user = models.OneToOneField(User, blank=True, null=True, on_delete=models.CASCADE, related_name='wishlist')
     session_key = models.CharField(max_length=100, unique=True, blank=True, null=True, verbose_name=_('session key'))
     products = models.ManyToManyField(Product, related_name='wishlist')
-

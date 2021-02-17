@@ -46,7 +46,7 @@ class UserLoginDataSerializer(serializers.ModelSerializer):
     token = serializers.SerializerMethodField()
 
     def get_token(self, user):
-        token = Token.objects.get_or_create(user=user)
+        token = Token.objects.get_or_create(user=user)[0]
         return token.key
 
     class Meta:

@@ -19,7 +19,6 @@ class Country(models.Model):
         return self.logo + ' ' + self.name_en + ' ' + self.name_ar
 
 
-
 class User(AbstractUser):
     CUSTOMER = MALE = 0
     SELLER = FEMALE = 1
