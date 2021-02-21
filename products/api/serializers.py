@@ -2,7 +2,7 @@ from django.db.models import Q
 from rest_framework import serializers, status
 from rest_framework.response import Response
 
-from products.models import Product, Option, Category, ProductImages, Brand, CartProduct, Cart, WishList
+from products.models import Product, Option, Category, ProductImages, Brand, CartProduct, Cart, WishList, ProductReview
 
 
 class OptionSerializer(serializers.ModelSerializer):
@@ -31,11 +31,17 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
+    reviews = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = ['id', 'sku', 'name', 'name_ar', 'description', 'description_ar', 'price',
-                  'stock', 'weight', 'main_image', 'images', 'categories', 'options', 'brand']
+                  'stock', 'weight', 'main_image', 'images', 'categories', 'options', 'brand', 'reviews', 'rate',
+                  'rate_count']
+
+    def get_reviews(self, obj):
+        reviews = obj.reviews.all()[:5]
+        return ReviewSerializer(reviews, many=True, context={'request': self.context.get('view').request}).data
 
     def to_internal_value(self, data):
         # override many to many field by get from form-data as string separated by ',' and split it to list and set
@@ -102,6 +108,7 @@ class CartProductSerializer(serializers.ModelSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
     products = CartProductSerializer(many=True)
+
     class Meta:
         model = Cart
         fields = ['products']
@@ -178,3 +185,25 @@ class WishSerializer(serializers.ModelSerializer):
             return wish
         else:
             raise Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProductReview
+        fields = ['user', 'product', 'rate', 'comment', 'created_at']
+        extra_kwargs = {'product': {'write_only': True}}
+
+    def get_user(self, obj):
+        request = self.context.get("request", None)
+
+        return {'name': obj.user.get_full_name(), 'image': request.build_absolute_uri(obj.user.image.url)}
+
+    def create(self, validated_data):
+        request = self.context.get("request", None)
+        if request:
+            review = ProductReview.objects.create(user=request.user, rate=validated_data['rate'],
+                                                  comment=validated_data['comment'], product=validated_data['product'])
+            return review
+        raise Response(status=status.HTTP_404_NOT_FOUND)

@@ -5,40 +5,6 @@
     <link rel="stylesheet" href="{% static 'AdminLte/plugins/daterangepicker/daterangepicker.css' %}">
 {% endblock %}
 {% block body %}
-    {% if account %}
-        {#Product Permissions#}
-        {% perms account 'products.view_product' as view_product %}
-        {% perms account 'products.add_product' as add_product %}
-        {% perms account 'products.delete_product' as delete_product %}
-        {% perms account 'products.change_product' as change_product %}
-        {#Option Permissions#}
-        {% perms account 'products.view_option' as view_option %}
-        {% perms account 'products.add_option' as add_option %}
-        {% perms account 'products.delete_option' as delete_option %}
-        {% perms account 'products.change_option' as change_option %}
-        {#Category Permissions#}
-        {% perms account 'products.view_category' as view_category %}
-        {% perms account 'products.add_category' as add_category %}
-        {% perms account 'products.delete_category' as delete_category %}
-        {% perms account 'products.change_category' as change_category %}
-        {#Brand Permissions#}
-        {% perms account 'products.view_brand' as view_brand %}
-        {% perms account 'products.add_brand' as add_brand %}
-        {% perms account 'products.delete_brand' as delete_brand %}
-        {% perms account 'products.change_brand' as change_brand %}
-        {#Account Permissions#}
-        {% perms account 'accounts.view_user' as view_account %}
-        {% perms account 'accounts.add_user' as add_account %}
-        {% perms account 'accounts.delete_user' as delete_account %}
-        {% perms account 'accounts.change_user' as change_account %}
-        {#Country Permissions#}
-        {% perms account 'accounts.view_country' as view_country %}
-        {% perms account 'accounts.add_country' as add_country %}
-        {% perms account 'accounts.delete_country' as delete_country %}
-        {% perms account 'accounts.change_country' as change_country %}
-        {#SiteInfo Permissions#}
-        {% perms account 'accounts.change_siteinfo' as change_siteinfo %}
-    {% endif %}
     <div class="content-wrapper">
         <section class="content-header">
             <div class="container-fluid">
@@ -60,79 +26,42 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-12">
-                        <div class="card card-primary">
-                            <div class="card-header">
-                                <h3 class="card-title">{% trans 'Account' %}</h3>
-                            </div>
-                            <!-- /.card-header -->
-                            <!-- form start -->
-                            <form method="POST" enctype="multipart/form-data">
-                                {% csrf_token %}
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="card card-outline card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title">{% trans 'Account' %}</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                                                class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </div>
                                 <div class="card-body">
-                                    <div class="row" style="color: red">
-                                        {{ form.errors }}
-                                    </div>
                                     <div class="row">
                                         <div class="col-6">
                                             <div class="form-group">
-                                                {% if form.username.errors %}
-                                                    {% define 'form-control is-invalid' as username_class %}
-                                                {% else %}
-                                                    {% define 'form-control' as username_class %}
-                                                {% endif %}
-                                                <label for="username">{% trans 'Username' %}</label>
-                                                {% render_field form.username class=username_class id="username" %}
-                                                <div style="color: red">
-                                                    {{ form.username.errors }}
-                                                </div>
+                                                {% form_tag form.username id="username" %}
                                             </div>
                                         </div>
                                         <div class="col-6">
                                             <div class="form-group">
-                                                {% if form.email.errors %}
-                                                    {% define 'form-control is-invalid' as email_class %}
-                                                {% else %}
-                                                    {% define 'form-control' as email_class %}
-                                                {% endif %}
-                                                <label for="email">{% trans 'Email' %}</label>
-                                                {% render_field form.email class=email_class id="email" %}
-                                                <div style="color: red">
-                                                    {{ form.email.errors }}
-                                                </div>
+                                                {% form_tag form.email id="email" %}
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-6">
                                             <div class="form-group">
-                                                {% if form.first_name.errors %}
-                                                    {% define 'form-control is-invalid' as first_name %}
-                                                {% else %}
-                                                    {% define 'form-control' as first_name_class %}
-                                                {% endif %}
-                                                <label for="first_name">{% trans 'First Name' %}</label>
-                                                {% render_field form.first_name class=first_name_class id="first_name" %}
-                                                <div style="color: red">
-                                                    {{ form.first_name.errors }}
-                                                </div>
+                                                {% form_tag form.first_name id="first_name" %}
                                             </div>
                                         </div>
                                         <div class="col-6">
                                             <div class="form-group">
-                                                {% if form.last_name.errors %}
-                                                    {% define 'form-control is-invalid' as last_name_class %}
-                                                {% else %}
-                                                    {% define 'form-control' as last_name_class %}
-                                                {% endif %}
-                                                <label for="last_name">{% trans 'Last Name' %}</label>
-                                                {% render_field form.last_name class=last_name_class id="last_name" %}
-                                                <div style="color: red">
-                                                    {{ form.last_name.errors }}
-                                                </div>
+                                                {% form_tag form.last_name id="last_name" %}
                                             </div>
                                         </div>
                                     </div>
-
                                     <div class="row">
                                         <div class="col-6">
                                             <div class="form-group">
@@ -156,52 +85,49 @@
                                             </div>
                                         </div>
                                         <div class="col-6">
-                                            {{ form.image }}
+                                            <div class="form-group">
+                                                <label for="image">{{ form.image.label }}<span
+                                                        style="color:red"> *</span></label>
+                                                {{ form.image }}
+                                            </div>
                                             <div style="color: red">
                                                 {{ form.image.errors }}
                                             </div>
                                         </div>
+
                                     </div>
                                     <div class="row">
                                         <div class="col-6">
                                             <div class="form-group">
-                                                {% if form.password1.errors %}
-                                                    {% define 'form-control is-invalid' as password1_class %}
-                                                {% else %}
-                                                    {% define 'form-control' as password1_class %}
-                                                {% endif %}
-                                                <label for="password1">{% trans 'Password' %}</label>
-                                                {% render_field form.password1 class=password1_class id="password1" %}
-                                                <div style="color: red">
-                                                    {{ form.password1.errors }}
-                                                </div>
+                                                {% form_tag form.password1 id="password1" %}
                                             </div>
                                         </div>
                                         <div class="col-6">
                                             <div class="form-group">
-                                                {% if form.password2.errors %}
-                                                    {% define 'form-control is-invalid' as password2_class %}
-                                                {% else %}
-                                                    {% define 'form-control' as password2_class %}
-                                                {% endif %}
-                                                <label for="email">{% trans 'Confirm Password' %}</label>
-                                                {% render_field form.password2 class=password2_class id="password2" %}
-                                                <div style="color: red">
-                                                    {{ form.password2.errors }}
-                                                </div>
+                                                {% form_tag form.password2 id="password2" %}
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-6">
                                             <div class="form-group">
-                                                <label for="active">{% trans 'Active' %}</label>
-                                                <div style="float: right">
-                                                    {% render_field form.is_active data-bootstrap-switch='' data-off-color="danger" data-on-color="success" %}
-                                                </div>
+                                                {% check_tag form.is_active %}
+
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="card card-outline card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title">{% trans 'Permissions' %}</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                                                class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
                                     <div class="row">
                                         <style>
                                             .table th, td {
@@ -221,140 +147,48 @@
                                             </thead>
                                             <tbody>
                                             <tr>
-                                                <td>1.</td>
-                                                <td>{% trans 'Product' %}</td>
-                                                <td><input name="product-view" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success"
-                                                        {{ view_product }}>
-                                                </td>
-                                                <td><input name="product-add" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success"{{ add_product }}></td>
-                                                <td><input name="product-update" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ change_product }}></td>
-                                                <td><input name="product-delete" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ delete_product }}></td>
-
+                                                {% perms_row model_name='product' app='products' num='1' account=account %}
                                             </tr>
                                             <tr>
-                                                <td>2.</td>
-                                                <td>{% trans 'Option' %}</td>
-                                                <td><input name="option-view" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ view_option }}></td>
-                                                <td><input name="option-add" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ add_option }}></td>
-                                                <td><input name="option-update" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ change_option }}></td>
-                                                <td><input name="option-delete" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ delete_option }}></td>
+                                                {% perms_row model_name='option' app='products' num='2' account=account %}
                                             </tr>
                                             <tr>
-                                                <td>3.</td>
-                                                <td>{% trans 'Category' %}</td>
-                                                <td><input name="category-view" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ view_category }}></td>
-                                                <td><input name="category-add" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ add_category }} ></td>
-                                                <td><input name="category-update" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ change_category }}></td>
-                                                <td><input name="category-delete" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ delete_category }}></td>
-
+                                                {% perms_row model_name='category' app='products' num='3' account=account %}
                                             </tr>
                                             <tr>
-                                                <td>4.</td>
-                                                <td>{% trans 'Brand' %}</td>
-                                                <td><input name="brand-view" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ view_brand }}></td>
-                                                <td><input name="brand-add" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ add_brand }} ></td>
-                                                <td><input name="brand-update" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ change_brand }}></td>
-                                                <td><input name="brand-delete" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ delete_brand }}></td>
-
+                                                {% perms_row model_name='brand' app='products' num='4' account=account %}
                                             </tr>
                                             <tr>
-                                                <td>5.</td>
-                                                <td>{% trans 'Account' %}</td>
-                                                <td><input name="account-view" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ view_account }}></td>
-                                                <td><input name="account-add" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ add_account }}></td>
-                                                <td><input name="account-update" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ change_account }}></td>
-                                                <td><input name="account-delete" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ delete_account }}></td>
+                                                {% perms_row model_name='user' app='accounts' num='5' account=account %}
                                             </tr>
                                             <tr>
-                                                <td>6.</td>
-                                                <td>{% trans 'Country' %}</td>
-                                                <td><input name="country-view" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ view_country }}></td>
-                                                <td><input name="country-add" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ add_country }} ></td>
-                                                <td><input name="country-update" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ change_country }}></td>
-                                                <td><input name="country-delete" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ delete_country }}></td>
+                                                {% perms_row model_name='country' app='accounts' num='6' account=account %}
                                             </tr>
                                             <tr>
-                                                <td>7.</td>
-                                                <td>{% trans 'Site Info' %}</td>
-                                                <td></td>
-                                                <td></td>
-                                                <td><input name="site_info-update" type="checkbox"
-                                                           data-bootstrap-switch data-off-color="danger"
-                                                           data-on-color="success" {{ change_siteinfo }}></td>
-                                                <td></td>
+                                                {% perms_row model_name='siteinfo' app='accounts' num='7' account=account view=False add=False delete=False %}
                                             </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
-                                <!-- /.card-body -->
+                            </div>
+                            <div style="margin-bottom: 15px;float: right;">
+                                <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
 
-                                <div class="card-footer">
-                                    <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
-
-                                    {% if form.instance.pk %}
-                                        {% if perms.accounts.delete_user %}
-                                            <a href="{% url 'accounts:account_delete' form.instance.pk %}"
-                                               style="float: right" type="submit" class="btn btn-danger">Delete
-                                            </a>
-                                        {% endif %}
-                                    {% else %}
-                                        <input type="submit"
-                                               class="btn btn-success"
-                                               name="another"
-                                               value="{% trans 'Save And Add Another' %}">
+                                {% if form.instance.pk %}
+                                    {% if perms.accounts.delete_user %}
+                                        <a href="{% url 'accounts:account_delete' form.instance.pk %}"
+                                            type="submit" class="btn btn-danger">Delete
+                                        </a>
                                     {% endif %}
-                                </div>
-                            </form>
-                        </div>
+                                {% else %}
+                                    <input type="submit"
+                                           class="btn btn-success"
+                                           name="another"
+                                           value="{% trans 'Save And Add Another' %}">
+                                {% endif %}
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

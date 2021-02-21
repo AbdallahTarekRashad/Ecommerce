@@ -43,4 +43,11 @@ http://127.0.0.1:8000/api/doc/schema.json
 http://127.0.0.1:8000/api/doc/schema.yaml
 #### Deployed Website (above links work with Deployed Website):
 http://shopdjango.pythonanywhere.com/
-
+#### Admin Dashboard:
+http://shopdjango.pythonanywhere.com/seller/ \
+to access functionality of seller admin dashboard log with this username and password
+```
+username: seller
+email: seller@ecommerce.com
+password: admin123456
+```

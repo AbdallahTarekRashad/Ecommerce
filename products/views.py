@@ -1,5 +1,4 @@
 import json
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django import forms
@@ -311,10 +310,8 @@ class ProductListView(LoginRequiredMixin, TemplateView):
 
 @method_decorator(permission_required('products.view_product', raise_exception=True), name='dispatch')
 class ProductListJson(LoginRequiredMixin, BaseDatatableView):
-    columns = ['id', 'name', 'name_ar', 'description', 'description_ar', 'sku', 'price', 'weight', 'stock',
-               'main_image']
-    order_columns = ['id', 'name', 'name_ar', 'description', 'description_ar', 'sku', 'price', 'weight', 'stock',
-                     'main_image']
+    columns = ['id', 'name', 'sku', 'price', 'stock', 'publish', 'main_image']
+    order_columns = ['id', 'name', 'sku', 'price', 'stock', 'publish', 'main_image']
     max_display_length = 30
     model = Product
 
@@ -329,6 +326,9 @@ class ProductListJson(LoginRequiredMixin, BaseDatatableView):
 
     def filter_queryset(self, qs):
         search = self.request.GET.get('search[value]', None)
+        is_publish = self.request.GET.get('columns[6][search][value]', None)
+        if not is_publish:
+            is_publish = self.request.GET.get('columns[5][search][value]', None)
         if search:
             qs = qs.filter(
                 Q(name__icontains=search) |
@@ -340,6 +340,8 @@ class ProductListJson(LoginRequiredMixin, BaseDatatableView):
                 Q(weight__icontains=search) |
                 Q(stock__icontains=search)
             )
+        if is_publish:
+            qs = qs.filter(publish=is_publish)
         return qs
 
 
@@ -354,15 +356,16 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
 class ProductCreateView(LoginRequiredMixin, CreateView):
     fields = (
         'name', 'name_ar', 'description', 'description_ar', 'sku', 'price', 'weight', 'stock', 'main_image',
-        'categories', 'options', 'brand', 'show')
+        'categories', 'options', 'brand', 'publish', 'disable_buy_button', 'available_upon_request', 'not_returnable',
+        'new', 'admin_comment', 'additional_shipping_charge', 'shipping_type', 'length', 'width', 'height', 'old_price',
+        'show_on_home_page', 'product_cost')
+
     model = Product
     template_name = 'AdminLte/product/form.html'
 
     # to edit form fields that class generate
     def get_form(self, form_class=None):
         form = super(ProductCreateView, self).get_form()
-        form.fields['description'] = forms.CharField(widget=forms.Textarea)
-        form.fields['description_ar'] = forms.CharField(widget=forms.Textarea)
         # overwrite template name of image filed widget to customize design
         form.fields['main_image'].widget.template_name = 'AdminLte/clearable_file_input.html'
         return form
@@ -387,14 +390,14 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
     fields = (
         'name', 'name_ar', 'description', 'description_ar', 'sku', 'price', 'weight', 'stock', 'main_image',
-        'categories', 'options', 'brand', 'show')
+        'categories', 'options', 'brand', 'publish', 'disable_buy_button', 'available_upon_request', 'not_returnable',
+        'new', 'admin_comment', 'additional_shipping_charge', 'shipping_type', 'length', 'width', 'height', 'old_price',
+        'show_on_home_page', 'product_cost')
     model = Product
     template_name = 'AdminLte/product/form.html'
 
     def get_form(self, form_class=None):
         form = super(ProductUpdateView, self).get_form()
-        form.fields['description'] = forms.CharField(widget=forms.Textarea)
-        form.fields['description_ar'] = forms.CharField(widget=forms.Textarea)
         # overwrite template name of image filed widget to customize design
         form.fields['main_image'].widget.template_name = 'AdminLte/clearable_file_input.html'
         return form
@@ -449,7 +452,7 @@ class ProductView(DetailView):
             if user and rate and comment:
                 ProductReview.objects.create(user=user, rate=rate, comment=comment, product_id=pk)
                 return redirect('products:product', pk=pk)
-        return Http404
+        raise Http404('Product not Exist')
 
 
 # Ajax View Response just json

@@ -36,13 +36,10 @@
                                         <th>#</th>
                                     {% endif %}
                                     <th>{% trans 'Name' %}</th>
-                                    <th>{% trans 'Name Ar' %}</th>
-                                    <th>{% trans 'Description' %}</th>
-                                    <th>{% trans 'Description Ar' %}</th>
                                     <th>{% trans 'SKU' %}</th>
                                     <th>{% trans 'Price' %}</th>
-                                    <th>{% trans 'Weight' %}</th>
                                     <th>{% trans 'Stock' %}</th>
+                                    <th>{% trans 'Publish' %}</th>
                                     <th>{% trans 'Image' %}</th>
                                 </tr>
                                 </thead>
@@ -54,13 +51,10 @@
                                         <th>#</th>
                                     {% endif %}
                                     <th>{% trans 'Name' %}</th>
-                                    <th>{% trans 'Name Ar' %}</th>
-                                    <th>{% trans 'Description' %}</th>
-                                    <th>{% trans 'Description Ar' %}</th>
                                     <th>{% trans 'SKU' %}</th>
                                     <th>{% trans 'Price' %}</th>
-                                    <th>{% trans 'Weight' %}</th>
                                     <th>{% trans 'Stock' %}</th>
+                                    <th>{% trans 'Publish' %}</th>
                                     <th>{% trans 'Image' %}</th>
                                 </tr>
                                 </tfoot>
@@ -90,6 +84,23 @@
         {% endif %}
         $(document).ready(function () {
             $('#example1').dataTable({
+                initComplete: function () {
+                    this.api().columns({% if delete %}6{% else %}5{% endif %}).every(function () {
+                        var column = this;
+                        var select = $('<select style="margin-left: 15px"><option value=""></option></select>')
+                            .appendTo($(column.header()))
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+                                column.search(val).draw();
+                            });
+                        let a = '{% trans 'Publish' %}'
+                        select.append('<option value="True">' + a + '</option>')
+                        a = '{% trans 'Unpublish' %}'
+                        select.append('<option value="False">' + a + '</option>')
+                    });
+                },
                 responsive: true,
                 autoWidth: false,
                 order: [],
@@ -106,24 +117,21 @@
                     {% endif %}
                     {data: 1},
                     {data: 2},
-                    {data: 3, render: long_render}, {# global function define in AdminLte/datatable_scripts.html #}
-                    {data: 4, render: long_render}, {# global function define in AdminLte/datatable_scripts.html #}
-                    {data: 5},
-                    {data: 6},
-                    {data: 7},
-                    {data: 8},
-                    {data: 9, render: img_render}, {# global function define in AdminLte/datatable_scripts.html #}
+                    {data: 3},
+                    {data: 4},
+                    {data: 5, render: true_false_render},
+                    {data: 6, render: img_render}, {# global function define in AdminLte/datatable_scripts.html #}
                 ],
                 {% if delete %}
                     columnDefs: [
                         {
-                            targets: [2, 3, 4, 5, 6, 7, 8, 9],
+                            targets: [2, 3, 4, 5],
                             className: 'align-middle text-center',
                             orderable: true,
                             searchable: true
                         },
                         {
-                            targets: [0, 1, 10],
+                            targets: [0, 1, 6, 7],
                             className: 'align-middle text-center',
                             orderable: false,
                             searchable: false
@@ -132,12 +140,12 @@
                 {% else %}
                     columnDefs: [
                         {
-                            targets: [1, 2, 3, 4, 5, 6, 7, 8,],
+                            targets: [1, 2, 3, 4,],
                             className: 'align-middle text-center',
                             orderable: true,
                             searchable: true
                         },
-                        {targets: [0, 9], className: 'align-middle text-center', orderable: false, searchable: false}
+                        {targets: [0, 5, 6], className: 'align-middle text-center', orderable: false, searchable: false}
                     ],
                 {% endif %}
                 searching: true,

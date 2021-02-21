@@ -2,6 +2,7 @@ from django import template
 from django.utils.translation import get_language
 from urllib.parse import urlencode
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 register = template.Library()
 
@@ -10,15 +11,6 @@ register = template.Library()
 @register.simple_tag
 def define(val=None):
     return val
-
-
-# to return checked if account have permission
-@register.simple_tag
-def perms(account, permission):
-    if account.has_perm(permission):
-        return 'checked'
-    else:
-        return None
 
 
 # just if condition to check language
@@ -110,7 +102,7 @@ def rate(num):
     result = ''
     for i in range(int(num)):
         result += star
-    if num - int(num) > 0.5:
+    if num - int(num) >= 0.5:
         result += half_star
         emp = 5 - int(num) - 1
     else:
@@ -118,3 +110,99 @@ def rate(num):
     for e in range(emp):
         result += empty_star
     return result
+
+
+@register.simple_tag
+def form_tag(form_field, class_name=None, **kwargs):
+    if form_field.field.help_text:
+        help_text = '<div data-toggle="tooltip" data-html="true" title="' + str(
+            form_field.field.help_text) + '"class="ico-help"><i class="fa fa-question-circle"></i></div>'
+    else:
+        help_text = ''
+    if form_field.field.required:
+        label = '<label for="' + str(form_field.name) + '">' + str(
+            _(form_field.label)) + '<span style="color:red"> *</span>' + help_text + '</label>'
+    else:
+        label = '<label for="' + str(form_field.name) + '">' + str(_(form_field.label)) + help_text + '</label>'
+    if class_name is None:
+        if form_field.errors:
+            class_name = 'form-control is-invalid'
+        else:
+            class_name = 'form-control'
+    if form_field.errors:
+        error = '<div style="color: red">' + form_field.errors + '</div>'
+    else:
+        error = ''
+    kwargs['class'] = class_name
+    form_field.field.widget.attrs.update(kwargs)
+    out = label + form_field.__str__() + error
+    return mark_safe(out)
+
+
+@register.simple_tag
+def check_tag(form_field):
+    dic = {
+        'data-bootstrap-switch': '',
+        'data-off-color': 'danger',
+        'data-on-color': 'success',
+    }
+    if form_field.field.help_text:
+        help_text = '<div title="' + str(
+            form_field.field.help_text) + '" data-toggle="tooltip" class="ico-help"><i class="fa fa-question-circle"></i></div>'
+    else:
+        help_text = ''
+    if form_field.field.required:
+        label = '<label for="' + str(form_field.name) + '">' + str(
+            _(form_field.label)) + '<span style="color:red"> *</span>' + help_text + '</label>'
+    else:
+        label = '<label for="' + str(form_field.name) + '">' + str(_(form_field.label)) + help_text + '</label>'
+    if form_field.errors:
+        error = '<div style="color: red">' + form_field.errors + '</div>'
+    else:
+        error = ''
+    form_field.field.widget.attrs.update(dic)
+    out = label + '<div style="display: block;width: 100%;text-align: end;">' + form_field.__str__() + '</div>' + error
+    return mark_safe(out)
+
+# to return checked if account have permission
+@register.simple_tag
+def perms(account, permission):
+    if account and account.has_perm(permission):
+        return 'checked'
+    else:
+        return ''
+
+
+# model_name must be in lower case
+# app is plural
+@register.simple_tag
+def perms_row(model_name, app, num, account=None, view=True, add=True, change=True, delete=True):
+    number = '<td>' + num + '.</td>'
+    class_name = '<td>' + str(_(model_name.capitalize())) + '</td>'
+    if view:
+        td_view = '<td><input name="' + model_name + '-view" type="checkbox"data-bootstrap-switch ' \
+                                                     'data-off-color="danger"data-on-color="success" ' + \
+                  perms(account, app + '.view_' + model_name) + '></td> '
+    else:
+        td_view = '<td></td>'
+    if add:
+        td_add = '<td><input name="' + model_name + '-add" type="checkbox"data-bootstrap-switch ' \
+                                                    'data-off-color="danger"data-on-color="success" ' + \
+                 perms(account, app + '.add_' + model_name) + '></td> '
+    else:
+        td_add = '<td></td>'
+    if change:
+        td_change = '<td><input name="' + model_name + '-change" type="checkbox"data-bootstrap-switch ' \
+                                                       'data-off-color="danger"data-on-color="success" ' + \
+                    perms(account, app + '.change_' + model_name) + '></td> '
+    else:
+        td_change = '<td></td>'
+    if delete:
+        td_delete = '<td><input name="' + model_name + '-delete" type="checkbox"data-bootstrap-switch ' \
+                                                       'data-off-color="danger"data-on-color="success" ' + \
+                    perms(account, app + '.delete_' + model_name) + '></td> '
+    else:
+        td_delete = '<td></td>'
+
+    out = number + class_name + td_view + td_add + td_change + td_delete
+    return mark_safe(out)

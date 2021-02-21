@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from products.api.serializers import OptionSerializer, CategorySerializer, ProductSerializer, BrandSerializer, \
-    CartSerializer, CartProductSerializer, WishSerializer
+    CartSerializer, WishSerializer, ReviewSerializer
 from products.models import Product, Option, Category, Brand, Cart, CartProduct, WishList
 
 
@@ -21,6 +21,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 10
 
 
+# Admin APIs Views
 @method_decorator(permission_required('products.view_option', raise_exception=True), name='list')
 @method_decorator(permission_required('products.view_option', raise_exception=True), name='retrieve')
 class OptionModelViewSet(ModelViewSet):
@@ -71,6 +72,10 @@ class ProductModelViewSet(ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
 
+# End Admin APIs Views
+
+
+# Site APIs Views
 class CartView(APIView):
     serializer_class = CartSerializer
 
@@ -227,3 +232,18 @@ class SearchView(mixins.ListModelMixin, GenericViewSet):
             queryset = queryset.filter(Q(price__gte=min) & Q(price__lt=max))
 
         return queryset
+
+
+class ReviewView(APIView):
+    serializer_class = ReviewSerializer
+
+    @swagger_auto_schema(request_body=ReviewSerializer, responses={200: ReviewSerializer})
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+# class ProductView(APIView):

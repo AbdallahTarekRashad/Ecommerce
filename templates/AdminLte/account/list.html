@@ -96,15 +96,10 @@
                                 );
                                 column.search(val).draw();
                             });
-                        column.data().unique().sort().each(function (d, j) {
-                            var a = ''
-                            if (d == 'True') {
-                                a = '{% trans 'Active' %}'
-                            } else {
-                                a = '{% trans 'Inactive' %}'
-                            }
-                            select.append('<option value="' + d + '">' + a + '</option>')
-                        });
+                        let a = '{% trans 'Active' %}'
+                        select.append('<option value="True">'+a+'</option>')
+                        a = '{% trans 'Inactive' %}'
+                        select.append('<option value="False">'+a+'</option>')
                     });
                 },
                 responsive: true,
@@ -128,14 +123,7 @@
                     {data: 4},
                     {
                         data: 5,
-                        render: function (data, type, row, meta) {
-                            if (data == 'True') {
-                                return '<i style="color: forestgreen;font-size: 25px" class="fas fa-check-circle"></i>'
-                            } else {
-                                return '<i style="color: red;font-size: 25px" class="fas fa-times-circle"></i>'
-                            }
-
-                        }
+                        render: true_false_render
                     },
                     {data: 6, render: img_render}, {# global function define in AdminLte/datatable_scripts.html #}
                 ],

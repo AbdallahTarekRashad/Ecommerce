@@ -4609,3 +4609,26 @@ ol {
     }
 
 }
+
+.product-price {
+    color: #7fad39;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.product-price span {
+    font-size: 14px;
+    font-weight: 400;
+    color: #b2b2b2;
+    text-decoration: line-through;
+}
+.sale {
+    color: #ffffff;
+    font-size: 10px;
+    background: #76BC42;
+    position: absolute;
+    left: 0;
+    top: 20px;
+    padding: 5px 10px;
+    text-transform: uppercase;
+}

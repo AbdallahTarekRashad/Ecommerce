@@ -131,7 +131,7 @@
         {
             extend: 'print',
             text: '{% trans 'Print' %}',
-            title:'{{site_info.name}}',
+            title: '{{site_info.name}}',
             autoPrint: false,
             repeatingHead: {
                 logo: 'assets/dist/img/report-logo.png',
@@ -198,6 +198,15 @@
         if (data.length > 40)
             return data.substring(0, 40) + ' ... ';
         return data;
+    }
+
+    function true_false_render (data, type, row, meta) {
+        if (data == 'True') {
+            return '<i style="color: #007fcc;font-size: 20px" class="fas fa-check"></i>'
+        } else {
+            return '<i style="color: red;font-size: 20px" class="fas fa-times"></i>'
+        }
+
     }
 
     function img_render(data, type, row, meta) {

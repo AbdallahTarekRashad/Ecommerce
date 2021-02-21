@@ -66,7 +66,7 @@
                                         <div class="product-item">
                                             <div class="pi-pic">
                                                 <img src="{{ p.main_image.url }}" alt="">
-                                                {#<div class="sale">Sale</div>#}
+                                                <div class="sale">Sale</div>
                                                 <div class="icon">
                                                     <i product_id="{{ p.pk }}" onclick="delete_wish(this)"
                                                        class="fa fa-minus-circle"></i>
@@ -88,7 +88,9 @@
                                                 </a>
                                                 <div class="product-price">
                                                     {{ p.price }} EGP
-                                                    {#<span>200 EGP</span>#}
+                                                    {% if p.old_price %}
+                                                        <span>{{ p.old_price }}EGP</span>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         </div>
