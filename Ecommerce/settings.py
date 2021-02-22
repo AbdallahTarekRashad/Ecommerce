@@ -52,9 +52,11 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     # social auth with rest auth
     'rest_social_auth',
-    # swagger for doc APIs
-    'rest_framework_swagger',
+    # for doc api using Swagger and ReDoc
     'drf_yasg',
+    # for periodic tasks by time
+    'django_crontab',
+    'django_cron',
     # my apps
     'accounts',
     'products',
@@ -268,7 +270,10 @@ REST_FRAMEWORK = {
         # 'rest_framework.parsers.JSONParser',
     ],
 }
-# SWAGGER_SETTINGS = {
-#     'doc_expansion': 'full'}
 
 SESSION_ENGINE = 'accounts.session_backend'
+# For Periodic Tasks
+CRON_CLASSES = [
+    "accounts.periodic_task.CleanCards",
+]
+

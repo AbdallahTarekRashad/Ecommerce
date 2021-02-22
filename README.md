@@ -21,6 +21,12 @@ $ virtualenv -p /usr/bin/python3.8 venv # path to python interprater python3.
 $ source venv/bin/activate
 $ pip install -r requirements.txt
 ```
+#### Periodic Tasks
+for run periodic tasks daily 
+```
+$ crontab -e
+$ 0 0 */1 * * source dir/to/venv/bin/activate; python dir/to/project/Ecommerce/manage.py runcrons
+```
 #### Project Run:
 ```
 $ python manage.py makemigrations

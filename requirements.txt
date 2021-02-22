@@ -17,3 +17,4 @@ xhtml2pdf==0.2.5
 pycountry
 emoji-country-flag
 googletrans==3.1.0a0
+django_cron

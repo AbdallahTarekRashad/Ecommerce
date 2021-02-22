@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
-
 from .models import User, Country, SiteInfo
 
 
@@ -33,4 +32,3 @@ admin.site.site_header = "Ecommerce"
 admin.site.site_title = "Ecommerce"
 admin.site.index_title = "Ecommerce"
 admin.site.login_template = "AdminLte/login.html"
-
