@@ -1,6 +1,7 @@
 from django.db.models import Q
 from rest_framework import serializers, status
 from rest_framework.response import Response
+from rest_flex_fields import FlexFieldsModelSerializer
 
 from products.models import Product, Option, Category, ProductImages, Brand, CartProduct, Cart, WishList, ProductReview
 
@@ -29,15 +30,25 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'image']
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductSerializer(FlexFieldsModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
     reviews = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = ['id', 'sku', 'name', 'name_ar', 'description', 'description_ar', 'price',
+        fields = ['id', 'sku', 'name', 'name_ar', 'description', 'description_ar', 'price', 'old_price',
                   'stock', 'weight', 'main_image', 'images', 'categories', 'options', 'brand', 'reviews', 'rate',
-                  'rate_count']
+                  'rate_count', 'shipping_type']
+
+        extra_kwargs = {'rate': {'read_only': True},
+                        'rate_count': {'read_only': True},
+                        'shipping_type': {'read_only': True}, }
+
+        expandable_fields = {
+            'categories': (CategorySerializer, {'many': True}),
+            'options': (OptionSerializer, {'many': True}),
+            'brand': BrandSerializer,
+        }
 
     def get_reviews(self, obj):
         reviews = obj.reviews.all()[:5]
@@ -67,13 +78,6 @@ class ProductSerializer(serializers.ModelSerializer):
             data.setlist('del_img', del_img)
         data._mutable = False
         return super(ProductSerializer, self).to_internal_value(data)
-
-    def to_representation(self, instance):
-        # overwrite to_representation to be nested in show
-        self.fields['categories'] = CategorySerializer(many=True)
-        self.fields['options'] = OptionSerializer(many=True)
-        self.fields['brand'] = BrandSerializer()
-        return super(ProductSerializer, self).to_representation(instance)
 
     def create(self, validated_data):
         images = self.context.get('view').request.FILES.getlist('images')

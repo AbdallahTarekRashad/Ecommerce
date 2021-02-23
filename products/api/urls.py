@@ -3,14 +3,15 @@ from rest_framework.routers import DefaultRouter
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from products.api.views import OptionModelViewSet, CategoryModelViewSet, ProductModelViewSet, BrandModelViewSet, \
-    CartView, CartViewId, WishView, WishViewId, SearchView, ReviewView
+    CartView, CartViewId, WishView, WishViewId, SearchView, ReviewView, ProductView
 
 router = DefaultRouter()
-router.register('admin/option', OptionModelViewSet, basename='api_admin_option')
-router.register('admin/category', CategoryModelViewSet, basename='api_admin_category')
-router.register('admin/product', ProductModelViewSet, basename='api_admin_product')
-router.register('admin/brand', BrandModelViewSet, basename='api_admin_brand')
-router.register('api/search', SearchView, basename='api_search')
+router.register('admin/options', OptionModelViewSet, basename='api_admin_option')
+router.register('admin/categories', CategoryModelViewSet, basename='api_admin_category')
+router.register('admin/products', ProductModelViewSet, basename='api_admin_product')
+router.register('admin/brands', BrandModelViewSet, basename='api_admin_brand')
+router.register('search', SearchView, basename='api_search')
+router.register('product', ProductView, basename='api_product')
 
 app_name = 'products_api'
 urlpatterns = router.urls

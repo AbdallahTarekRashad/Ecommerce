@@ -1,5 +1,4 @@
 from django.contrib.auth.decorators import permission_required
-from django.db.models import Q
 from django.utils.decorators import method_decorator
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -13,6 +12,27 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from products.api.serializers import OptionSerializer, CategorySerializer, ProductSerializer, BrandSerializer, \
     CartSerializer, WishSerializer, ReviewSerializer
 from products.models import Product, Option, Category, Brand, Cart, CartProduct, WishList
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
+
+field_expand = [
+    openapi.Parameter('expand', in_=openapi.IN_QUERY,
+                      description='Set up fields that be expanded to their fully serialized counterparts via query '
+                                  'parameters',
+                      type=openapi.TYPE_STRING),
+    openapi.Parameter('fields', in_=openapi.IN_QUERY,
+                      description='A query with the fields parameter on the other hand returns only a subset of the '
+                                  'fields',
+                      type=openapi.TYPE_STRING),
+    openapi.Parameter('omit', in_=openapi.IN_QUERY,
+                      description='A query with the omit parameter excludes specified fields',
+                      type=openapi.TYPE_STRING)]
+create = [
+    openapi.Parameter('images', in_=openapi.IN_FORM, description='multi files of Product images you want to add',
+                      type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_FILE))]
+update = create + [
+    openapi.Parameter('del_img', in_=openapi.IN_FORM, description='list of ids of Product images you want to delete',
+                      type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_INTEGER)),]
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -49,20 +69,11 @@ class BrandModelViewSet(ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
 
-@method_decorator(name='update', decorator=swagger_auto_schema(manual_parameters=[
-    openapi.Parameter('del_img', in_=openapi.IN_FORM, description='list of ids of Product images you want to delete',
-                      type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_INTEGER)),
-    openapi.Parameter('images', in_=openapi.IN_FORM, description='multi files of Product images you want to add',
-                      type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_FILE))
-]))
-@method_decorator(name='partial_update', decorator=swagger_auto_schema(manual_parameters=[
-    openapi.Parameter('del_img', in_=openapi.IN_FORM, description='list of ids of Product images you want to delete',
-                      type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_INTEGER)),
-    openapi.Parameter('images', in_=openapi.IN_FORM, description='multi files of Product images you want to add',
-                      type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_FILE))]))
-@method_decorator(name='create', decorator=swagger_auto_schema(manual_parameters=[
-    openapi.Parameter('images', in_=openapi.IN_FORM, description='multi files of Product images you want to add',
-                      type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_FILE))]))
+@method_decorator(name='update', decorator=swagger_auto_schema(manual_parameters=update))
+@method_decorator(name='partial_update', decorator=swagger_auto_schema(manual_parameters=update))
+@method_decorator(name='create', decorator=swagger_auto_schema(manual_parameters=create))
+@method_decorator(name='retrieve', decorator=swagger_auto_schema(manual_parameters=field_expand))
+@method_decorator(name='list', decorator=swagger_auto_schema(manual_parameters=field_expand))
 @method_decorator(permission_required('products.view_product', raise_exception=True), name='list')
 @method_decorator(permission_required('products.view_product', raise_exception=True), name='retrieve')
 class ProductModelViewSet(ModelViewSet):
@@ -194,44 +205,26 @@ class WishViewId(APIView):
         return Response(serializer.data)
 
 
-@method_decorator(name='list', decorator=swagger_auto_schema(manual_parameters=[
-    openapi.Parameter('category', in_=openapi.IN_QUERY, description='category id',
-                      type=openapi.TYPE_INTEGER),
-    openapi.Parameter('search', in_=openapi.IN_QUERY, description='search context',
-                      type=openapi.TYPE_STRING),
-    openapi.Parameter('min', in_=openapi.IN_QUERY, description='minimum price',
-                      type=openapi.TYPE_INTEGER),
-    openapi.Parameter('max', in_=openapi.IN_QUERY, description='maximum price',
-                      type=openapi.TYPE_INTEGER)]))
+@method_decorator(name='list', decorator=swagger_auto_schema(manual_parameters=field_expand))
 class SearchView(mixins.ListModelMixin, GenericViewSet):
     serializer_class = ProductSerializer
     pagination_class = StandardResultsSetPagination
     queryset = Product.view_object.all()
-
-    def filter_queryset(self, queryset):
-        category = self.request.GET.get('category', None)
-        search = self.request.GET.get('search', None)
-        min = self.request.GET.get('min', None)
-        max = self.request.GET.get('max', None)
-
-        if category:
-            queryset = queryset.filter(categories=category)
-        if search:
-            queryset = queryset.filter(
-                Q(name__icontains=search) |
-                Q(name_ar__icontains=search) |
-                Q(description__icontains=search) |
-                Q(description_ar__icontains=search) |
-                Q(sku__icontains=search) |
-                Q(weight__icontains=search) |
-                Q(brand__name__icontains=search) |
-                Q(brand__name_ar__icontains=search)
-            )
-
-        if min and max:
-            queryset = queryset.filter(Q(price__gte=min) & Q(price__lt=max))
-
-        return queryset
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = {
+        'sku': ['exact'],
+        'price': ['gte', 'lte'],
+        'name': ['icontains'],
+        'name_ar': ['icontains'],
+        'categories': ['exact'],
+        'options': ['exact'],
+        'brand': ['exact'],
+        'rate': ['gte', 'lte'],
+    }
+    search_fields = ['name', 'name_ar', 'categories__name', 'categories__name_ar', 'options__name', 'options__name_ar',
+                     'sku', ]
+    ordering_fields = ['price', 'rate']
+    ordering = ['rate']
 
 
 class ReviewView(APIView):
@@ -246,4 +239,8 @@ class ReviewView(APIView):
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-# class ProductView(APIView):
+
+@method_decorator(name='retrieve', decorator=swagger_auto_schema(manual_parameters=field_expand))
+class ProductView(mixins.RetrieveModelMixin, GenericViewSet):
+    serializer_class = ProductSerializer
+    queryset = Product.view_object.all()

@@ -18,3 +18,5 @@ pycountry
 emoji-country-flag
 googletrans==3.1.0a0
 django_cron
+django-filter
+drf-flex-fields

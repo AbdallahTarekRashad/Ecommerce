@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     # rest framework
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
     # social auth with rest auth
     'rest_social_auth',
     # for doc api using Swagger and ReDoc
@@ -269,6 +270,8 @@ REST_FRAMEWORK = {
         # 'rest_framework.parsers.FormParser',
         # 'rest_framework.parsers.JSONParser',
     ],
+    # For filterset_fields
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
 SESSION_ENGINE = 'accounts.session_backend'
@@ -276,4 +279,3 @@ SESSION_ENGINE = 'accounts.session_backend'
 CRON_CLASSES = [
     "accounts.periodic_task.CleanCards",
 ]
-
