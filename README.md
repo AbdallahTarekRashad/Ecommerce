@@ -15,7 +15,7 @@ ALTER USER ecommerce WITH SUPERUSER;
 ##### Sqlite
 you should change in `settings.py` `DATABASES.default.ENGINE` to `django.db.backends.sqlite3`
 #### venv install :
-```
+```commandline
 $ sudo pip install virtualenv 
 $ virtualenv -p /usr/bin/python3.8 venv # path to python interprater python3.
 $ source venv/bin/activate
@@ -24,14 +24,16 @@ $ pip install -r requirements.txt
 #### Periodic Tasks
 for run periodic tasks daily 
 ```
-$ crontab -e
+$ crontab -e # append this line in last of the file
 $ 0 0 */1 * * source dir/to/venv/bin/activate; python dir/to/project/Ecommerce/manage.py runcrons
 ```
 #### Project Run:
-```
+```commandline
 $ python manage.py makemigrations
 $ python manage.py migrate
-$ python manage.py createsuperuser #create superuser to use in project
+$ python manage.py add_countries # for fill country tabel from country.json 
+$ python manage.py createsuperuser # create superuser to use in project
+$ sudo docker run -p 6379:6379 -d redis:5 # for running redis server for websockets(channels layer) 
 $ python manage.py runserver
 ```
 #### jet Errors:
@@ -52,7 +54,7 @@ http://shopdjango.pythonanywhere.com/
 #### Admin Dashboard:
 http://shopdjango.pythonanywhere.com/seller/ \
 to access functionality of seller admin dashboard log with this username and password
-```
+```commandline
 username: seller
 email: seller@ecommerce.com
 password: admin123456

@@ -439,8 +439,8 @@ class ProductView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ProductView, self).get_context_data(**kwargs)
-        relate_products = Product.view_object.all().filter(categories__in=self.object.categories.all()).distinct(
-            'pk').exclude(pk=self.object.pk)[:4]
+        relate_products = Product.view_object.all().filter(categories__in=self.object.categories.all()).exclude(
+            pk=self.object.pk)[:4]
         context.update({'relate_products': relate_products})
         return context
 

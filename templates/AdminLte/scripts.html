@@ -33,7 +33,9 @@
 <!-- AdminLTE for demo purposes -->
 <script src="{% static 'AdminLte/dist/js/demo.js' %}"></script>
 {#<!-- AdminLTE dashboard demo (This is only for demo purposes) -->#}
-{#<script src="{% static 'AdminLte/dist/js/pages/dashboard.js' %}"></script>#}
+<script src="{% static 'js/reconnecting-websocket.min.js' %}"></script>
+
+<script src="{% static 'AdminLte/build/js/chat.js' %}"></script>
 <script>
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();

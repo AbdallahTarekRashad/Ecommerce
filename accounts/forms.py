@@ -17,7 +17,7 @@ class CustomUserAdminCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('email', 'birth_date', 'first_name', 'last_name', 'image', 'billing_address',
-                  'default_shipping_address', 'country', 'phone', 'gender', 'username', 'user_permissions','is_active')
+                  'default_shipping_address', 'country', 'phone', 'gender', 'username', 'user_permissions', 'is_active')
 
 
 class UserChangeForm(forms.ModelForm):

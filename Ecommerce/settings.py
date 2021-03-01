@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -29,6 +30,10 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # For Chat
+    'channels',
+    'chat',
+    'channels_presence',
     # for jet admin dashboard
     'jet',
     'jet.dashboard',
@@ -56,7 +61,6 @@ INSTALLED_APPS = [
     # for doc api using Swagger and ReDoc
     'drf_yasg',
     # for periodic tasks by time
-    'django_crontab',
     'django_cron',
     # my apps
     'accounts',
@@ -273,9 +277,20 @@ REST_FRAMEWORK = {
     # For filterset_fields
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
-
+# to change cycle_key function because this function change session_key after login
 SESSION_ENGINE = 'accounts.session_backend'
 # For Periodic Tasks
 CRON_CLASSES = [
     "accounts.periodic_task.CleanCards",
 ]
+# for chat app
+ASGI_APPLICATION = 'Ecommerce.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+

@@ -3,21 +3,24 @@
 <head>
     {% include 'AdminLte/head.html' %}
     {% block extra_head %}
-    
+
     {% endblock %}
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
     {% include 'AdminLte/header.html' %}
     {% block body %}
-    
     {% endblock %}
     {% include 'AdminLte/footer.html' %}
-    
+    {% include 'AdminLte/chat.html' %}
 </div>
+<script>
+    const image = "{{ user.image.url }}";
+    const name = "{{ user }}";
+</script>
 {% include 'AdminLte/scripts.html' %}
 {% block extra_script %}
-
 {% endblock %}
 </body>
 </html>
+

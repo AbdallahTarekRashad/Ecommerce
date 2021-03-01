@@ -69,7 +69,7 @@ def login_view(request):
 
 def home(request):
     categories = Category.objects.all()[:11]
-    products = Product.view_object.filter(categories__in=categories).distinct('pk')[:12]
+    products = Product.view_object.filter(categories__in=categories)[:12]
     latest_products = Product.view_object.all().order_by('created_at')[:18]
     context = {'products': products, 'latest_products': latest_products}
     return render(request, 'index.html', context=context)
@@ -109,7 +109,7 @@ def add_permissions(request, user):
     # Option Permission
     option_view = request.POST.get("option-view", None)
     option_add = request.POST.get("option-add", None)
-    option_update = request.POST.get("option-update", None)
+    option_update = request.POST.get("option-change", None)
     option_delete = request.POST.get("option-delete", None)
     if option_view:
         permission = Permission.objects.get(name='Can view Option')
@@ -138,7 +138,7 @@ def add_permissions(request, user):
     # Category Permission
     category_view = request.POST.get("category-view", None)
     category_add = request.POST.get("category-add", None)
-    category_update = request.POST.get("category-update", None)
+    category_update = request.POST.get("category-change", None)
     category_delete = request.POST.get("category-delete", None)
     if category_view:
         permission = Permission.objects.get(name='Can view Category')
@@ -167,7 +167,7 @@ def add_permissions(request, user):
     # Brand Permission
     brand_view = request.POST.get("brand-view", None)
     brand_add = request.POST.get("brand-add", None)
-    brand_update = request.POST.get("brand-update", None)
+    brand_update = request.POST.get("brand-change", None)
     brand_delete = request.POST.get("brand-delete", None)
     if brand_view:
         permission = Permission.objects.get(name='Can view Brand')
@@ -196,7 +196,7 @@ def add_permissions(request, user):
     # Product Permission
     product_view = request.POST.get("product-view", None)
     product_add = request.POST.get("product-add", None)
-    product_update = request.POST.get("product-update", None)
+    product_update = request.POST.get("product-change", None)
     product_delete = request.POST.get("product-delete", None)
     if product_view:
         permission = Permission.objects.get(name='Can view Product')
@@ -223,10 +223,10 @@ def add_permissions(request, user):
         permission = Permission.objects.get(name='Can delete Product')
         user.user_permissions.remove(permission)
     # Account Permission
-    account_view = request.POST.get("account-view", None)
-    account_add = request.POST.get("account-add", None)
-    account_update = request.POST.get("account-update", None)
-    account_delete = request.POST.get("account-delete", None)
+    account_view = request.POST.get("user-view", None)
+    account_add = request.POST.get("user-add", None)
+    account_update = request.POST.get("user-change", None)
+    account_delete = request.POST.get("user-delete", None)
     if account_view:
         permission = Permission.objects.get(name='Can view User')
         user.user_permissions.add(permission)
@@ -254,7 +254,7 @@ def add_permissions(request, user):
     # Country Permission
     country_view = request.POST.get("country-view", None)
     country_add = request.POST.get("country-add", None)
-    country_update = request.POST.get("country-update", None)
+    country_update = request.POST.get("country-change", None)
     country_delete = request.POST.get("country-delete", None)
     if country_view:
         permission = Permission.objects.get(name='Can view Country')
@@ -281,7 +281,7 @@ def add_permissions(request, user):
         permission = Permission.objects.get(name='Can delete Country')
         user.user_permissions.remove(permission)
     # SiteInfo Permission
-    siteinfo_update = request.POST.get("site_info-update", None)
+    siteinfo_update = request.POST.get("siteinfo-change", None)
     if siteinfo_update:
         permission = Permission.objects.get(name='Can change Site Info')
         user.user_permissions.add(permission)

@@ -1,9 +1,8 @@
 from django.contrib.auth.views import LogoutView
-from django.urls import path, reverse_lazy, include
 from .views import SignUpView, home, login_view, admin_home, SiteInfoUpdateView, AccountListView, AccountListJson, \
     AccountCreateView, AccountUpdateView, test, AccountDeleteView, CountryListView, CountryListJson, CountryCreateView, \
     CountryUpdateView, CountryDeleteView
-from django.urls import path, reverse_lazy
+from django.urls import path, reverse_lazy, include
 from django.contrib.auth import views as auth_views
 
 app_name = 'accounts'
@@ -45,7 +44,6 @@ urlpatterns = [
 
     path('seller/', admin_home, name='admin_home'),
     path('seller/site_info', SiteInfoUpdateView.as_view(), name='site_info'),
-
 
     # Accounts Admin Dashboard Urls
     path('seller/account/', AccountListView.as_view(), name='account_list'),

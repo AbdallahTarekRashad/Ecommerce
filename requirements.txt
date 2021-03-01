@@ -20,3 +20,6 @@ googletrans==3.1.0a0
 django_cron
 django-filter
 drf-flex-fields
+channels
+channels_redis
+django-channels-presence
